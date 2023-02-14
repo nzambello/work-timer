@@ -1,37 +1,55 @@
-import type { User, Project } from '@prisma/client'
+import type { User, Project } from '@prisma/client';
 
-import { prisma } from '~/db.server'
+import { prisma } from '~/db.server';
 
-export type { Project } from '@prisma/client'
+export type { Project } from '@prisma/client';
 
 export function getProject({
   id,
   userId
 }: Pick<Project, 'id'> & {
-  userId: User['id']
+  userId: User['id'];
 }) {
   return prisma.project.findFirst({
     where: { id, userId }
-  })
+  });
 }
 
-export function getProjects({
+export async function getProjects({
   userId,
   page,
-  offset,
-  orderBy
+  size,
+  orderBy,
+  order
 }: {
-  userId: User['id']
-  page?: number
-  offset?: number
-  orderBy?: { [key in keyof Project]?: 'asc' | 'desc' }
+  userId: User['id'];
+  page?: number;
+  size?: number;
+  orderBy?: string;
+  order?: 'asc' | 'desc';
 }) {
-  return prisma.project.findMany({
+  const totalProjects = await prisma.project.count({
+    where: { userId }
+  });
+  const paginatedProjects = await prisma.project.findMany({
     where: { userId },
-    orderBy: orderBy || { updatedAt: 'desc' },
-    skip: page && offset ? page * offset : 0,
-    take: offset
-  })
+    orderBy: {
+      [orderBy || 'createdAt']: order || 'desc'
+    },
+    skip: page && size ? (page - 1) * size : 0,
+    take: size
+  });
+
+  const nextPage =
+    page && size && totalProjects > page * size ? page + 1 : null;
+  const previousPage = page && page > 2 ? page - 1 : null;
+
+  return {
+    total: totalProjects,
+    projects: paginatedProjects,
+    nextPage,
+    previousPage
+  };
 }
 
 export function createProject({
@@ -40,7 +58,7 @@ export function createProject({
   color,
   userId
 }: Pick<Project, 'name' | 'description' | 'color'> & {
-  userId: User['id']
+  userId: User['id'];
 }) {
   return prisma.project.create({
     data: {
@@ -49,7 +67,7 @@ export function createProject({
       color,
       userId
     }
-  })
+  });
 }
 
 export function updateProject({
@@ -58,7 +76,7 @@ export function updateProject({
   description,
   color
 }: Partial<Pick<Project, 'name' | 'description' | 'color'>> & {
-  projectId: Project['id']
+  projectId: Project['id'];
 }) {
   return prisma.project.update({
     data: {
@@ -69,11 +87,14 @@ export function updateProject({
     where: {
       id: projectId
     }
-  })
+  });
 }
 
-export function deleteProject({ id, userId }: Pick<Project, 'id'> & { userId: User['id'] }) {
+export function deleteProject({
+  id,
+  userId
+}: Pick<Project, 'id'> & { userId: User['id'] }) {
   return prisma.project.deleteMany({
     where: { id, userId }
-  })
+  });
 }
