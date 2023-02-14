@@ -1,13 +1,12 @@
-import type { LoaderArgs } from '@remix-run/node'
-import { json } from '@remix-run/node'
+import type { LoaderArgs } from '@remix-run/node';
+import { json, redirect } from '@remix-run/node';
 
-import { getUserId } from '~/session.server'
-import { safeRedirect } from '~/utils'
+import { getUserId } from '~/session.server';
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await getUserId(request)
-  if (userId) return safeRedirect('/time-entries')
-  return json({})
+  const userId = await getUserId(request);
+  if (userId) return redirect('/time-entries');
+  return json({});
 }
 
 export default function Index() {
@@ -16,12 +15,20 @@ export default function Index() {
       <h1>Welcome to Remix</h1>
       <ul>
         <li>
-          <a target="_blank" href="https://remix.run/tutorials/blog" rel="noreferrer">
+          <a
+            target="_blank"
+            href="https://remix.run/tutorials/blog"
+            rel="noreferrer"
+          >
             15m Quickstart Blog Tutorial
           </a>
         </li>
         <li>
-          <a target="_blank" href="https://remix.run/tutorials/jokes" rel="noreferrer">
+          <a
+            target="_blank"
+            href="https://remix.run/tutorials/jokes"
+            rel="noreferrer"
+          >
             Deep Dive Jokes App Tutorial
           </a>
         </li>
@@ -32,5 +39,5 @@ export default function Index() {
         </li>
       </ul>
     </div>
-  )
+  );
 }
