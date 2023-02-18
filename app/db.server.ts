@@ -24,8 +24,6 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 function getClient() {
-  invariant(typeof DATABASE_URL === 'string', 'DATABASE_URL env var not set');
-
   const databaseUrl = new URL(DATABASE_URL);
 
   console.log(`🔌 setting up prisma client to ${databaseUrl.host}`);
