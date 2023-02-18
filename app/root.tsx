@@ -274,7 +274,12 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                       <Home size={16} />
                     </ThemeIcon>
 
-                    <Text size="sm">Home</Text>
+                    <Text
+                      size="sm"
+                      weight={location.pathname === '/' ? 'bold' : 'normal'}
+                    >
+                      Home
+                    </Text>
                   </Group>
                 </UnstyledButton>
                 <UnstyledButton
@@ -303,7 +308,16 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                       <Clock size={16} />
                     </ThemeIcon>
 
-                    <Text size="sm">Time entries</Text>
+                    <Text
+                      size="sm"
+                      weight={
+                        location.pathname.includes('/time-entries')
+                          ? 'bold'
+                          : 'normal'
+                      }
+                    >
+                      Time entries
+                    </Text>
                   </Group>
                 </UnstyledButton>
                 <UnstyledButton
@@ -332,12 +346,21 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                       <Briefcase size={16} />
                     </ThemeIcon>
 
-                    <Text size="sm">Projects</Text>
+                    <Text
+                      size="sm"
+                      weight={
+                        location.pathname.includes('/projects')
+                          ? 'bold'
+                          : 'normal'
+                      }
+                    >
+                      Projects
+                    </Text>
                   </Group>
                 </UnstyledButton>
                 <UnstyledButton
                   component={Link}
-                  to="/"
+                  to="/report"
                   sx={(theme) => ({
                     display: 'block',
                     width: '100%',
@@ -361,7 +384,16 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                       <FileText size={16} />
                     </ThemeIcon>
 
-                    <Text size="sm">Report</Text>
+                    <Text
+                      size="sm"
+                      weight={
+                        location.pathname.includes('/report')
+                          ? 'bold'
+                          : 'normal'
+                      }
+                    >
+                      Report
+                    </Text>
                   </Group>
                 </UnstyledButton>
                 <UnstyledButton
@@ -390,12 +422,21 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                       <Upload size={16} />
                     </ThemeIcon>
 
-                    <Text size="sm">Import/Export</Text>
+                    <Text
+                      size="sm"
+                      weight={
+                        location.pathname.includes('/importexport')
+                          ? 'bold'
+                          : 'normal'
+                      }
+                    >
+                      Import/Export
+                    </Text>
                   </Group>
                 </UnstyledButton>
                 <UnstyledButton
                   component={Link}
-                  to="/"
+                  to="/statistics"
                   sx={(theme) => ({
                     display: 'block',
                     width: '100%',
@@ -419,7 +460,16 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                       <BarChart2 size={16} />
                     </ThemeIcon>
 
-                    <Text size="sm">Statistics</Text>
+                    <Text
+                      size="sm"
+                      weight={
+                        location.pathname.includes('/statistics')
+                          ? 'bold'
+                          : 'normal'
+                      }
+                    >
+                      Statistics
+                    </Text>
                   </Group>
                 </UnstyledButton>
               </Navbar.Section>
