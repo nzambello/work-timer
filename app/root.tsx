@@ -285,11 +285,11 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                 />
                 <NavLink
                   component={Link}
-                  to="/report"
-                  label="Report"
+                  to="/reports"
+                  label="Reports"
                   icon={
                     <ThemeIcon variant="light">
-                      <FileText size={16} />
+                      <BarChart2 size={16} />
                     </ThemeIcon>
                   }
                   variant="light"
@@ -306,18 +306,6 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                   }
                   variant="light"
                   active={location.pathname.includes('/importexport')}
-                />
-                <NavLink
-                  component={Link}
-                  to="/statistics"
-                  label="Statistics"
-                  icon={
-                    <ThemeIcon variant="light">
-                      <BarChart2 size={16} />
-                    </ThemeIcon>
-                  }
-                  variant="light"
-                  active={location.pathname.includes('/statistics')}
                 />
               </Navbar.Section>
             )}
