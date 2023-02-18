@@ -291,7 +291,12 @@ export default function TimeEntryDetailsPage() {
           >
             Start
           </label>
-          <Group align="flex-end">
+          <Group
+            align="flex-end"
+            sx={{
+              flexWrap: 'nowrap'
+            }}
+          >
             <DatePicker
               id="new-startTime-date"
               ref={startDateRef}
@@ -351,7 +356,12 @@ export default function TimeEntryDetailsPage() {
           >
             End
           </label>
-          <Group align="flex-end">
+          <Group
+            align="flex-end"
+            sx={{
+              flexWrap: 'nowrap'
+            }}
+          >
             <DatePicker
               id="new-endTime-date"
               ref={endDateRef}
@@ -385,7 +395,7 @@ export default function TimeEntryDetailsPage() {
               withSeconds
               clearable={false}
               aria-labelledby="new-endTime-label"
-              label="end time"
+              label="End time"
               value={end}
               onChange={(date) => {
                 let newDate = new Date(end || start);
