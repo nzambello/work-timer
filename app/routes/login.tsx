@@ -92,6 +92,21 @@ export default function LoginPage() {
 
   return (
     <Box sx={{ maxWidth: 300 }} mx="auto">
+      <h1
+        style={{
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          padding: 0,
+          margin: '-1px',
+          overflow: 'hidden',
+          clip: 'rect(0,0,0,0)',
+          whiteSpace: 'nowrap',
+          border: 0
+        }}
+      >
+        Login
+      </h1>
       <Form method="post" noValidate>
         <TextInput
           mb={12}

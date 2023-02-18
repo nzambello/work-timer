@@ -1,4 +1,4 @@
-import { Box, Paper } from '@mantine/core';
+import { Box, Paper, Title } from '@mantine/core';
 import { MetaFunction, LoaderArgs, redirect, json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
 import { getTimeEntries } from '~/models/timeEntry.server';
@@ -28,7 +28,21 @@ export default function ReportPage() {
 
   return (
     <>
-      <h1>Report</h1>
+      <h1
+        style={{
+          position: 'absolute',
+          width: '1px',
+          height: '1px',
+          padding: 0,
+          margin: '-1px',
+          overflow: 'hidden',
+          clip: 'rect(0,0,0,0)',
+          whiteSpace: 'nowrap',
+          border: 0
+        }}
+      >
+        Report
+      </h1>
       <Paper p="lg" radius="md">
         Coming soon
       </Paper>
