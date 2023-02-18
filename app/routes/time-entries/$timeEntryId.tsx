@@ -229,7 +229,7 @@ export default function TimeEntryDetailsPage() {
   return (
     <LayoutWrapper>
       <Form
-        method="post"
+        method="patch"
         noValidate
         style={{
           display: 'flex',
