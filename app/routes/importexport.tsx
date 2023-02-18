@@ -1,17 +1,12 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Button,
-  Paper,
   Text,
-  Menu,
-  ActionIcon,
-  Pagination,
-  NativeSelect,
-  Group,
-  useMantineTheme,
   Alert,
-  ColorSwatch,
-  Tabs
+  Tabs,
+  FileInput,
+  Loader,
+  Flex
 } from '@mantine/core';
 import {
   ActionArgs,
@@ -20,28 +15,15 @@ import {
   MetaFunction,
   redirect
 } from '@remix-run/node';
-import {
-  Form,
-  Link,
-  Outlet,
-  useActionData,
-  useCatch,
-  useLoaderData,
-  useSearchParams
-} from '@remix-run/react';
-import {
-  AlertTriangle,
-  Download,
-  Edit3,
-  Plus,
-  Settings,
-  Trash,
-  Upload
-} from 'react-feather';
+import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
+import { CheckCircle, Download, Upload, XCircle } from 'react-feather';
 import { requireUserId } from '~/session.server';
-import { getProjects } from '~/models/project.server';
-import { exportTimeEntries, getTimeEntries } from '~/models/timeEntry.server';
+import { createProject, getProjectByName } from '~/models/project.server';
+import { createTimeEntry } from '~/models/timeEntry.server';
 import papaparse from 'papaparse';
+
+const randomColor = () =>
+  `#${Math.floor(Math.random() * 16777215).toString(16)}`;
 
 export const meta: MetaFunction = () => {
   return {
@@ -54,49 +36,125 @@ export async function action({ request, params }: ActionArgs) {
   const userId = await requireUserId(request);
   const formData = await request.formData();
 
-  const actionType = formData.get('type');
+  const fileData = formData.get('fileData');
 
-  if (
-    typeof actionType !== 'string' ||
-    !['import', 'export'].includes(actionType)
-  ) {
+  if (typeof fileData !== 'string' || !fileData?.length) {
     return json(
-      {
-        errors: {
-          type: 'Invalid action type',
-          data: null
-        }
-      },
-      {
-        status: 400
-      }
+      { errors: { fileData: 'No file data' }, success: false },
+      { status: 400 }
     );
   }
 
-  if (actionType === 'import') {
-    const file = formData.get('file');
+  const parsed = papaparse.parse(fileData, {
+    header: true,
+    skipEmptyLines: true
+  });
 
-    return json({}, { status: 200 });
-  } else if (actionType === 'export') {
-    const timeEntries = await exportTimeEntries({ userId });
-    const csv = papaparse.unparse(timeEntries, {
-      header: true
+  if (parsed.errors.length) {
+    return json(
+      {
+        errors: { fileData: parsed.errors[0].message },
+        success: false,
+        imported: 0
+      },
+      { status: 400 }
+    );
+  }
+
+  const headers = parsed.meta.fields;
+  if (!headers?.includes('description')) {
+    return json(
+      {
+        errors: { fileData: 'Missing description column' },
+        success: false,
+        imported: 0
+      },
+      { status: 400 }
+    );
+  }
+  if (!headers?.includes('startTime')) {
+    return json(
+      {
+        errors: { fileData: 'Missing startTime column' },
+        success: false,
+        imported: 0
+      },
+      { status: 400 }
+    );
+  }
+  if (!headers?.includes('endTime')) {
+    return json(
+      {
+        errors: { fileData: 'Missing endTime column' },
+        success: false,
+        imported: 0
+      },
+      { status: 400 }
+    );
+  }
+  if (!headers?.includes('project')) {
+    return json(
+      {
+        errors: { fileData: 'Missing project column' },
+        success: false,
+        imported: 0
+      },
+      { status: 400 }
+    );
+  }
+
+  const timeEntries = parsed.data.map<{
+    description: string;
+    startTime: string;
+    endTime?: string;
+    projectId?: string;
+    projectName: string;
+  }>((row: any) => ({
+    description: row.description,
+    startTime: row.startTime,
+    endTime: row.endTime,
+    projectId: undefined,
+    projectName: row.project
+  }));
+
+  for (const timeEntry of timeEntries) {
+    const project = await getProjectByName({
+      userId,
+      name: timeEntry.projectName
     });
 
-    return json(
-      {
-        headers: {
-          'Content-Type': 'text/csv',
-          'Content-Disposition': 'attachment; filename="export.csv"'
-        },
-        body: 'hello world',
-        errors: {}
-      },
-      {
-        status: 200
-      }
-    );
+    if (!project) {
+      const project = await createProject({
+        userId,
+        name: timeEntry.projectName,
+        description: null,
+        color: randomColor()
+      });
+
+      timeEntry.projectId = project.id;
+    } else {
+      timeEntry.projectId = project.id;
+    }
+
+    await createTimeEntry({
+      userId,
+      projectId: timeEntry.projectId,
+      description: timeEntry.description,
+      startTime: new Date(timeEntry.startTime),
+      endTime: timeEntry.endTime ? new Date(timeEntry.endTime) : null
+    });
   }
+
+  return json(
+    {
+      errors: {
+        fileData: null
+      },
+      success: true,
+      imported: timeEntries.length
+    },
+    { status: 200 }
+  );
 }
 
 export async function loader({ request }: LoaderArgs) {
@@ -108,8 +166,6 @@ export async function loader({ request }: LoaderArgs) {
 
 export default function ImportExportPage() {
   const actionData = useActionData<typeof action>();
-  const data = useLoaderData<typeof loader>();
-  const theme = useMantineTheme();
   const [searchParams, setSearchParams] = useSearchParams();
 
   const tab = useMemo(() => {
@@ -119,6 +175,26 @@ export default function ImportExportPage() {
   useEffect(() => {
     setSearchParams({ tab });
   }, []);
+
+  const [csvData, setCsvData] = useState<string>();
+
+  useEffect(() => {
+    if (actionData?.success) {
+      setTimeout(() => {
+        window.location.pathname = '/time-entries';
+      }, 3000);
+    }
+  }, [actionData?.success]);
+
+  const handleChangeFile = (file: File) => {
+    let reader: FileReader = new FileReader();
+
+    reader.onload = (_event: Event) => {
+      setCsvData(reader.result as string);
+    };
+
+    reader.readAsText(file, 'UTF-8');
+  };
 
   return (
     <div>
@@ -140,7 +216,66 @@ export default function ImportExportPage() {
         </Tabs.List>
 
         <Tabs.Panel value="import" pt="xs">
-          <h2>Import CSV</h2>
+          <h2>Import</h2>
+          <p>
+            Select a CSV file with the same format as the one you can download
+            from <Link to="?tab=export">Export</Link>
+          </p>
+
+          <FileInput
+            label="Upload CSV file"
+            placeholder="Upload CSV file"
+            accept=".csv, text/csv"
+            icon={<Upload size={14} />}
+            onChange={handleChangeFile}
+            aria-invalid={actionData?.errors?.fileData ? true : undefined}
+            error={actionData?.errors?.fileData}
+            errorProps={{ children: actionData?.errors?.fileData }}
+          />
+
+          <Form method="post" noValidate>
+            <input type="hidden" name="fileData" value={csvData} />
+            <Button
+              type="submit"
+              mt="md"
+              disabled={!csvData?.length || !!actionData?.success}
+            >
+              Import
+            </Button>
+          </Form>
+
+          {!!actionData?.success && (
+            <Alert
+              icon={<CheckCircle size={16} />}
+              title="Import successful"
+              color="green"
+              radius="md"
+              variant="light"
+              mt="md"
+              withCloseButton
+              closeButtonLabel="Close results"
+            >
+              Successfully imported time entries
+              <Flex mt="md" align="center">
+                <Loader size={16} />
+                <Text ml="sm">Redirecting to time entries...</Text>
+              </Flex>
+            </Alert>
+          )}
+          {!!actionData?.errors?.fileData && (
+            <Alert
+              icon={<XCircle size={16} />}
+              title="Error"
+              color="red"
+              radius="md"
+              variant="light"
+              mt="md"
+              withCloseButton
+              closeButtonLabel="Close results"
+            >
+              {actionData?.errors?.fileData}
+            </Alert>
+          )}
         </Tabs.Panel>
 
         <Tabs.Panel value="export" pt="xs">
