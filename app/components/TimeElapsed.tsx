@@ -39,8 +39,7 @@ const TimeElapsed = ({ startTime, endTime }: Props) => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        flexDirection: 'column',
-        margin: '0 1rem'
+        flexDirection: 'column'
       }}
     >
       <pre

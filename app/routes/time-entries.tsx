@@ -312,14 +312,15 @@ export default function TimeEntriesPage() {
                 <Box
                   sx={{
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'flex-end',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                     flexShrink: 1,
                     flexGrow: 0,
 
                     '@media (min-width: 601px)': {
-                      flexDirection: 'row'
+                      flexDirection: 'row',
+                      paddingLeft: '1rem'
                     }
                   }}
                 >
@@ -331,8 +332,10 @@ export default function TimeEntriesPage() {
                     sx={{
                       display: 'flex',
                       flexShrink: 0,
+                      marginLeft: '1rem',
 
                       '@media (max-width: 600px)': {
+                        marginLeft: '0',
                         marginTop: '0.33rem'
                       }
                     }}
