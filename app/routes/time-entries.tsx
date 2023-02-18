@@ -177,15 +177,27 @@ export default function TimeEntriesPage() {
         mb="md"
         mx="auto"
         maw={500}
-        display="flex"
-        style={{
-          justifyContent: 'space-between'
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+
+          '@media (max-width: 600px)': {
+            flexWrap: 'wrap',
+            justifyContent: 'space-evenly'
+          }
         }}
       >
         <Text size="sm" color="darkgray">
           {data.total} entries
         </Text>
-        <Divider orientation="vertical" />
+        <Divider
+          orientation="vertical"
+          sx={{
+            '@media (max-width: 600px)': {
+              display: 'none'
+            }
+          }}
+        />
         <SectionTimeElapsed
           timeEntries={
             data.timeEntries.filter(
@@ -204,7 +216,14 @@ export default function TimeEntriesPage() {
           size="sm"
           additionalLabel="today"
         />
-        <Divider orientation="vertical" />
+        <Divider
+          orientation="vertical"
+          sx={{
+            '@media (max-width: 600px)': {
+              display: 'none'
+            }
+          }}
+        />
         <SectionTimeElapsed
           timeEntries={
             data.timeEntries.filter(
