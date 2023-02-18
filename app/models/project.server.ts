@@ -15,6 +15,17 @@ export function getProject({
   });
 }
 
+export function getProjectByName({
+  name,
+  userId
+}: Pick<Project, 'name'> & {
+  userId: User['id'];
+}) {
+  return prisma.project.findFirst({
+    where: { name, userId }
+  });
+}
+
 export async function getProjects({
   userId,
   page,

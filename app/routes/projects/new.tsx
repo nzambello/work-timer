@@ -20,7 +20,11 @@ import {
 } from '@remix-run/react';
 import * as React from 'react';
 import { AlertTriangle, RefreshCcw, Save } from 'react-feather';
-import { createProject, Project } from '~/models/project.server';
+import {
+  createProject,
+  getProjectByName,
+  Project
+} from '~/models/project.server';
 import { requireUserId } from '~/session.server';
 
 export const meta: MetaFunction = () => {
@@ -78,6 +82,20 @@ export async function action({ request }: ActionArgs) {
         }
       },
       { status: 400 }
+    );
+  }
+
+  const projectWithSameName = await getProjectByName({ name, userId });
+  if (projectWithSameName) {
+    return json(
+      {
+        errors: {
+          name: 'A project with this name already exists',
+          description: null,
+          color: null
+        }
+      },
+      { status: 409 }
     );
   }
 
