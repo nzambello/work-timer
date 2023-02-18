@@ -33,7 +33,8 @@ import {
   Box,
   Group,
   UnstyledButton,
-  ThemeIcon
+  ThemeIcon,
+  NavLink
 } from '@mantine/core';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { StylesPlaceholder } from '@mantine/remix';
@@ -102,7 +103,6 @@ function Document({
 }) {
   const preferredColorScheme = useColorScheme();
   const toggleColorScheme = (value?: ColorScheme) => {
-    console.log(value);
     setColorScheme(value || (colorScheme === 'dark' ? 'light' : 'dark'));
   };
 
@@ -248,230 +248,77 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
             </MediaQuery>
             {user && (
               <Navbar.Section grow mt="md">
-                <UnstyledButton
+                <NavLink
                   component={Link}
                   to="/"
-                  sx={(theme) => ({
-                    display: 'block',
-                    width: '100%',
-                    padding: theme.spacing.xs,
-                    borderRadius: theme.radius.sm,
-                    color:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[0]
-                        : theme.black,
-
-                    '&:hover': {
-                      backgroundColor:
-                        theme.colorScheme === 'dark'
-                          ? theme.colors.dark[6]
-                          : theme.colors.gray[0]
-                    }
-                  })}
-                >
-                  <Group>
+                  label="Home"
+                  icon={
                     <ThemeIcon variant="light">
                       <Home size={16} />
                     </ThemeIcon>
-
-                    <Text
-                      size="sm"
-                      weight={location.pathname === '/' ? 'bold' : 'normal'}
-                    >
-                      Home
-                    </Text>
-                  </Group>
-                </UnstyledButton>
-                <UnstyledButton
+                  }
+                  active={location.pathname === '/'}
+                />
+                <NavLink
                   component={Link}
                   to="/time-entries"
-                  sx={(theme) => ({
-                    display: 'block',
-                    width: '100%',
-                    padding: theme.spacing.xs,
-                    borderRadius: theme.radius.sm,
-                    color:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[0]
-                        : theme.black,
-
-                    '&:hover': {
-                      backgroundColor:
-                        theme.colorScheme === 'dark'
-                          ? theme.colors.dark[6]
-                          : theme.colors.gray[0]
-                    }
-                  })}
-                >
-                  <Group>
+                  label="Time entries"
+                  icon={
                     <ThemeIcon variant="light">
                       <Clock size={16} />
                     </ThemeIcon>
-
-                    <Text
-                      size="sm"
-                      weight={
-                        location.pathname.includes('/time-entries')
-                          ? 'bold'
-                          : 'normal'
-                      }
-                    >
-                      Time entries
-                    </Text>
-                  </Group>
-                </UnstyledButton>
-                <UnstyledButton
+                  }
+                  variant="light"
+                  active={location.pathname.includes('/time-entries')}
+                />
+                <NavLink
                   component={Link}
                   to="/projects"
-                  sx={(theme) => ({
-                    display: 'block',
-                    width: '100%',
-                    padding: theme.spacing.xs,
-                    borderRadius: theme.radius.sm,
-                    color:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[0]
-                        : theme.black,
-
-                    '&:hover': {
-                      backgroundColor:
-                        theme.colorScheme === 'dark'
-                          ? theme.colors.dark[6]
-                          : theme.colors.gray[0]
-                    }
-                  })}
-                >
-                  <Group>
+                  label="Projects"
+                  icon={
                     <ThemeIcon variant="light">
                       <Briefcase size={16} />
                     </ThemeIcon>
-
-                    <Text
-                      size="sm"
-                      weight={
-                        location.pathname.includes('/projects')
-                          ? 'bold'
-                          : 'normal'
-                      }
-                    >
-                      Projects
-                    </Text>
-                  </Group>
-                </UnstyledButton>
-                <UnstyledButton
+                  }
+                  variant="light"
+                  active={location.pathname.includes('/projects')}
+                />
+                <NavLink
                   component={Link}
                   to="/report"
-                  sx={(theme) => ({
-                    display: 'block',
-                    width: '100%',
-                    padding: theme.spacing.xs,
-                    borderRadius: theme.radius.sm,
-                    color:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[0]
-                        : theme.black,
-
-                    '&:hover': {
-                      backgroundColor:
-                        theme.colorScheme === 'dark'
-                          ? theme.colors.dark[6]
-                          : theme.colors.gray[0]
-                    }
-                  })}
-                >
-                  <Group>
+                  label="Report"
+                  icon={
                     <ThemeIcon variant="light">
                       <FileText size={16} />
                     </ThemeIcon>
-
-                    <Text
-                      size="sm"
-                      weight={
-                        location.pathname.includes('/report')
-                          ? 'bold'
-                          : 'normal'
-                      }
-                    >
-                      Report
-                    </Text>
-                  </Group>
-                </UnstyledButton>
-                <UnstyledButton
+                  }
+                  variant="light"
+                  active={location.pathname.includes('/report')}
+                />
+                <NavLink
                   component={Link}
                   to="/importexport"
-                  sx={(theme) => ({
-                    display: 'block',
-                    width: '100%',
-                    padding: theme.spacing.xs,
-                    borderRadius: theme.radius.sm,
-                    color:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[0]
-                        : theme.black,
-
-                    '&:hover': {
-                      backgroundColor:
-                        theme.colorScheme === 'dark'
-                          ? theme.colors.dark[6]
-                          : theme.colors.gray[0]
-                    }
-                  })}
-                >
-                  <Group>
+                  label="Import/Export"
+                  icon={
                     <ThemeIcon variant="light">
                       <Upload size={16} />
                     </ThemeIcon>
-
-                    <Text
-                      size="sm"
-                      weight={
-                        location.pathname.includes('/importexport')
-                          ? 'bold'
-                          : 'normal'
-                      }
-                    >
-                      Import/Export
-                    </Text>
-                  </Group>
-                </UnstyledButton>
-                <UnstyledButton
+                  }
+                  variant="light"
+                  active={location.pathname.includes('/importexport')}
+                />
+                <NavLink
                   component={Link}
                   to="/statistics"
-                  sx={(theme) => ({
-                    display: 'block',
-                    width: '100%',
-                    padding: theme.spacing.xs,
-                    borderRadius: theme.radius.sm,
-                    color:
-                      theme.colorScheme === 'dark'
-                        ? theme.colors.dark[0]
-                        : theme.black,
-
-                    '&:hover': {
-                      backgroundColor:
-                        theme.colorScheme === 'dark'
-                          ? theme.colors.dark[6]
-                          : theme.colors.gray[0]
-                    }
-                  })}
-                >
-                  <Group>
+                  label="Statistics"
+                  icon={
                     <ThemeIcon variant="light">
                       <BarChart2 size={16} />
                     </ThemeIcon>
-
-                    <Text
-                      size="sm"
-                      weight={
-                        location.pathname.includes('/statistics')
-                          ? 'bold'
-                          : 'normal'
-                      }
-                    >
-                      Statistics
-                    </Text>
-                  </Group>
-                </UnstyledButton>
+                  }
+                  variant="light"
+                  active={location.pathname.includes('/statistics')}
+                />
               </Navbar.Section>
             )}
             {user && (
