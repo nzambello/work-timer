@@ -14,7 +14,8 @@ import {
   Progress,
   Badge,
   ThemeIcon,
-  Alert
+  Alert,
+  Box
 } from '@mantine/core';
 import { json, LoaderArgs, MetaFunction, redirect } from '@remix-run/node';
 import {
@@ -138,7 +139,8 @@ export default function TimeEntriesPage() {
           style={{
             display: 'flex',
             alignItems: 'flex-end',
-            justifyContent: 'space-between'
+            justifyContent: 'space-between',
+            margin: '0.5rem 0'
           }}
         >
           <NativeSelect
@@ -248,123 +250,171 @@ export default function TimeEntriesPage() {
                 radius="md"
                 mb="sm"
                 display="flex"
-                style={{
+                sx={() => ({
                   alignItems: 'center',
-                  flexDirection: 'column'
-                }}
+                  justifyContent: 'space-between',
+                  flexDirection: 'row'
+                })}
               >
-                <div
-                  style={{
+                <Box
+                  sx={() => ({
                     display: 'flex',
-                    alignItems: 'center',
+                    alignItems: 'flex-start',
+                    flexDirection: 'column',
                     justifyContent: 'space-between',
-                    width: '100%'
-                  }}
+                    flexGrow: 1,
+                    width: '100%',
+
+                    '@media (min-width: 601px)': {
+                      alignItems: 'center',
+                      flexDirection: 'row'
+                    }
+                  })}
                 >
-                  <span
-                    style={{
-                      marginRight: 'auto'
+                  <Box
+                    component="span"
+                    sx={{
+                      display: 'inline-block',
+                      marginRight: 'auto',
+
+                      '@media (max-width: 600px)': {
+                        marginBottom: '0.33rem'
+                      }
                     }}
                   >
                     {timeEntry.description}
-                  </span>
+                  </Box>
                   {timeEntry.projectId && timeEntry.project && (
                     <Badge color={timeEntry.project.color}>
                       {timeEntry.project.name}
                     </Badge>
                   )}
+                </Box>
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    flexShrink: 1,
+                    flexGrow: 0,
+
+                    '@media (min-width: 601px)': {
+                      flexDirection: 'row'
+                    }
+                  }}
+                >
                   <TimeElapsed
                     startTime={timeEntry.startTime}
                     endTime={timeEntry.endTime}
                   />
-                  <Menu shadow="md" width={200}>
-                    <Menu.Target>
-                      <ActionIcon title="Edit" mr="xs">
-                        <Settings size={14} />
-                      </ActionIcon>
-                    </Menu.Target>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      flexShrink: 0,
 
-                    <Menu.Dropdown>
-                      <Menu.Label>Edit time entry</Menu.Label>
-                      <Menu.Item
-                        component={Link}
-                        to={`/time-entries/${timeEntry.id}`}
-                        icon={
-                          <Edit3 size={14} color={theme.colors.yellow[8]} />
-                        }
-                      >
-                        Edit
-                      </Menu.Item>
+                      '@media (max-width: 600px)': {
+                        marginTop: '0.33rem'
+                      }
+                    }}
+                  >
+                    <Menu shadow="md" width={200}>
+                      <Menu.Target>
+                        <ActionIcon
+                          title="Edit"
+                          mr="xs"
+                          sx={{
+                            marginLeft: 'auto'
+                          }}
+                        >
+                          <Settings size={14} />
+                        </ActionIcon>
+                      </Menu.Target>
+
+                      <Menu.Dropdown>
+                        <Menu.Label>Edit time entry</Menu.Label>
+                        <Menu.Item
+                          component={Link}
+                          to={`/time-entries/${timeEntry.id}`}
+                          icon={
+                            <Edit3 size={14} color={theme.colors.yellow[8]} />
+                          }
+                        >
+                          Edit
+                        </Menu.Item>
+                        <Form
+                          method="delete"
+                          action={`/time-entries/${timeEntry.id}`}
+                        >
+                          <Menu.Item
+                            component="button"
+                            type="submit"
+                            icon={
+                              <Trash size={14} color={theme.colors.red[8]} />
+                            }
+                          >
+                            Delete
+                          </Menu.Item>
+                        </Form>
+                      </Menu.Dropdown>
+                    </Menu>
+                    {timeEntry.endTime ? (
+                      <Form method="post" action="/time-entries/new">
+                        <input
+                          type="hidden"
+                          name="startTime"
+                          value={new Date(Date.now()).toISOString()}
+                        />
+                        <input
+                          type="hidden"
+                          name="description"
+                          value={timeEntry.description}
+                        />
+                        <input
+                          type="hidden"
+                          name="projectId"
+                          value={timeEntry.projectId}
+                        />
+                        <input
+                          type="hidden"
+                          name="userId"
+                          value={timeEntry.userId}
+                        />
+                        <ActionIcon
+                          type="submit"
+                          title="Start new entry with same description"
+                        >
+                          <ThemeIcon variant="light">
+                            <Play size={14} color={theme.colors.blue[7]} />
+                          </ThemeIcon>
+                        </ActionIcon>
+                      </Form>
+                    ) : (
                       <Form
-                        method="delete"
+                        method="patch"
                         action={`/time-entries/${timeEntry.id}`}
                       >
-                        <Menu.Item
-                          component="button"
+                        <input
+                          type="hidden"
+                          name="endTime"
+                          value={new Date().toISOString()}
+                        />
+                        <ActionIcon
                           type="submit"
-                          icon={<Trash size={14} color={theme.colors.red[8]} />}
+                          variant="filled"
+                          title="Stop"
+                          style={{
+                            backgroundColor: theme.colors.red[7],
+                            color: 'white',
+                            borderRadius: '50%'
+                          }}
                         >
-                          Delete
-                        </Menu.Item>
+                          <Square size={12} fill="currentColor" />
+                        </ActionIcon>
                       </Form>
-                    </Menu.Dropdown>
-                  </Menu>
-                  {timeEntry.endTime ? (
-                    <Form method="post" action="/time-entries/new">
-                      <input
-                        type="hidden"
-                        name="startTime"
-                        value={new Date(Date.now()).toISOString()}
-                      />
-                      <input
-                        type="hidden"
-                        name="description"
-                        value={timeEntry.description}
-                      />
-                      <input
-                        type="hidden"
-                        name="projectId"
-                        value={timeEntry.projectId}
-                      />
-                      <input
-                        type="hidden"
-                        name="userId"
-                        value={timeEntry.userId}
-                      />
-                      <ActionIcon
-                        type="submit"
-                        title="Start new entry with same description"
-                      >
-                        <ThemeIcon variant="light">
-                          <Play size={14} color={theme.colors.blue[7]} />
-                        </ThemeIcon>
-                      </ActionIcon>
-                    </Form>
-                  ) : (
-                    <Form
-                      method="patch"
-                      action={`/time-entries/${timeEntry.id}`}
-                    >
-                      <input
-                        type="hidden"
-                        name="endTime"
-                        value={new Date().toISOString()}
-                      />
-                      <ActionIcon
-                        type="submit"
-                        variant="filled"
-                        title="Stop"
-                        style={{
-                          backgroundColor: theme.colors.red[7],
-                          color: 'white',
-                          borderRadius: '50%'
-                        }}
-                      >
-                        <Square size={12} fill="currentColor" />
-                      </ActionIcon>
-                    </Form>
-                  )}
-                </div>
+                    )}
+                  </Box>
+                </Box>
               </Paper>
             ))}
           </section>

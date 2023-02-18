@@ -126,6 +126,17 @@ function Document({
           <html lang="en">
             <head>
               <meta charSet="utf-8" />
+              <meta
+                name="viewport"
+                content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
+              />
+              <meta name="apple-mobile-web-app-capable" content="yes" />
+              <meta
+                name="apple-mobile-web-app-status-bar-style"
+                content="default"
+              />
+              <meta name="format-detection" content="telephone=no" />
+              <meta name="mobile-web-app-capable" content="yes" />
               {title ? <title>{title}</title> : null}
               <StylesPlaceholder />
               <Meta />
@@ -355,7 +366,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                 </UnstyledButton>
                 <UnstyledButton
                   component={Link}
-                  to="/"
+                  to="/importexport"
                   sx={(theme) => ({
                     display: 'block',
                     width: '100%',
@@ -379,7 +390,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                       <Upload size={16} />
                     </ThemeIcon>
 
-                    <Text size="sm">Import</Text>
+                    <Text size="sm">Import/Export</Text>
                   </Group>
                 </UnstyledButton>
                 <UnstyledButton

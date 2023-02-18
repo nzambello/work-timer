@@ -1,3 +1,4 @@
+import { Box, MediaQuery } from '@mantine/core';
 import React, { useState, useEffect } from 'react';
 
 export interface Props {
@@ -33,8 +34,8 @@ const TimeElapsed = ({ startTime, endTime }: Props) => {
     .padStart(2, '0')}`;
 
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -50,31 +51,38 @@ const TimeElapsed = ({ startTime, endTime }: Props) => {
       >
         <code>{hoursString}</code>
       </pre>
-      <p
-        style={{
-          fontSize: '0.75rem',
-          margin: 0
+      <MediaQuery
+        smallerThan="sm"
+        styles={{
+          display: 'none'
         }}
       >
-        <span>
-          {Intl.DateTimeFormat('it-IT', {
-            hour: '2-digit',
-            minute: '2-digit',
-            hour12: false
-          }).format(new Date(startTime))}
-        </span>
-        <span dangerouslySetInnerHTML={{ __html: '&nbsp;&mdash;&nbsp;' }} />
-        <span>
-          {endTime
-            ? Intl.DateTimeFormat('it-IT', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-              }).format(new Date(endTime))
-            : 'now'}
-        </span>
-      </p>
-    </div>
+        <p
+          style={{
+            fontSize: '0.75rem',
+            margin: 0
+          }}
+        >
+          <span>
+            {Intl.DateTimeFormat('it-IT', {
+              hour: '2-digit',
+              minute: '2-digit',
+              hour12: false
+            }).format(new Date(startTime))}
+          </span>
+          <span dangerouslySetInnerHTML={{ __html: '&nbsp;&mdash;&nbsp;' }} />
+          <span>
+            {endTime
+              ? Intl.DateTimeFormat('it-IT', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  hour12: false
+                }).format(new Date(endTime))
+              : 'now'}
+          </span>
+        </p>
+      </MediaQuery>
+    </Box>
   );
 };
 
