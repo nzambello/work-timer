@@ -132,45 +132,50 @@ export default function TimeEntriesPage() {
           variant="light"
           radius={theme.radius.md}
           leftIcon={<Play />}
+          sx={{ marginTop: theme.spacing.sm, marginBottom: theme.spacing.sm }}
         >
           Start
         </Button>
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            justifyContent: 'space-between',
-            margin: '0.5rem 0'
+        <NativeSelect
+          sx={{
+            marginLeft: 'auto',
+            marginRight: '0.5rem',
+            marginTop: theme.spacing.sm,
+            marginBottom: theme.spacing.sm
           }}
-        >
-          <NativeSelect
-            data={[
-              { label: '25 / page', value: '25' },
-              { label: '50 / page', value: '50' },
-              { label: '100 / page', value: '100' }
-            ]}
-            value={pageSize}
-            onChange={(event) => {
+          data={[
+            { label: '25 / page', value: '25' },
+            { label: '50 / page', value: '50' },
+            { label: '100 / page', value: '100' }
+          ]}
+          value={pageSize}
+          onChange={(event) => {
+            setSearchParams({
+              page: page.toString(),
+              size: event.currentTarget.value
+            });
+          }}
+        />
+        {data.total / pageSize > 1 && (
+          <Pagination
+            sx={{
+              marginLeft: '0.5rem',
+              marginTop: theme.spacing.sm,
+              marginBottom: theme.spacing.sm
+            }}
+            aria-label="Navigate through time entries pages"
+            siblings={1}
+            boundaries={1}
+            page={page}
+            total={Math.ceil(data.total / pageSize)}
+            onChange={(page) => {
               setSearchParams({
                 page: page.toString(),
-                size: event.currentTarget.value
+                size: pageSize.toString()
               });
             }}
           />
-          {data.total / pageSize > 1 && (
-            <Pagination
-              style={{ marginLeft: 10 }}
-              page={page}
-              total={Math.ceil(data.total / pageSize)}
-              onChange={(page) => {
-                setSearchParams({
-                  page: page.toString(),
-                  size: pageSize.toString()
-                });
-              }}
-            />
-          )}
-        </div>
+        )}
       </Paper>
       <Group
         mt="lg"
