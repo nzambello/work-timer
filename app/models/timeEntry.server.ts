@@ -161,3 +161,28 @@ export function deleteTimeEntry({
     where: { id, userId }
   });
 }
+
+export async function exportTimeEntries({ userId }: { userId: User['id'] }) {
+  const entries = await prisma.timeEntry.findMany({
+    where: {
+      userId
+    },
+    select: {
+      id: true,
+      description: true,
+      startTime: true,
+      endTime: true,
+      createdAt: true,
+      project: {
+        select: {
+          name: true
+        }
+      }
+    }
+  });
+
+  return entries.map((entry) => ({
+    ...entry,
+    project: entry.project?.name
+  }));
+}
