@@ -239,10 +239,17 @@ export default function ReportPage() {
                     )?.name ?? 'No project'}
                   </Flex>
                 </td>
-                <td>{projectData._sum.duration / 1000 / 60 / 60} h</td>
+                <td>
+                  {(projectData._sum.duration / 1000 / 60 / 60).toFixed(2)} h
+                </td>
                 {costPerHour && (
                   <td>
-                    {(projectData._sum.duration * costPerHour) / 1000 / 60 / 60}{' '}
+                    {(
+                      (projectData._sum.duration * costPerHour) /
+                      1000 /
+                      60 /
+                      60
+                    ).toFixed(2)}{' '}
                     €
                   </td>
                 )}
