@@ -146,7 +146,11 @@ export async function action({ request, params }: ActionArgs) {
       description,
       projectId,
       startTime: startTime ? new Date(startTime) : undefined,
-      endTime: endTime ? new Date(endTime) : undefined
+      endTime: endTime ? new Date(endTime) : undefined,
+      duration:
+        endTime && startTime
+          ? new Date(endTime).getTime() - new Date(startTime).getTime()
+          : undefined
     });
   }
 

@@ -154,6 +154,10 @@ export async function action({ request }: ActionArgs) {
     description,
     startTime: new Date(startTime),
     endTime: typeof endTime === 'string' ? new Date(endTime) : null,
+    duration:
+      typeof endTime === 'string'
+        ? new Date(endTime).getTime() - new Date(startTime).getTime()
+        : null,
     userId,
     projectId
   });

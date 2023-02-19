@@ -20,11 +20,8 @@ import {
 } from '@remix-run/react';
 import * as React from 'react';
 import { AlertTriangle, RefreshCcw, Save } from 'react-feather';
-import {
-  createProject,
-  getProjectByName,
-  Project
-} from '~/models/project.server';
+import { COLORS_MAP, randomColor } from '~/utils';
+import { createProject, getProjectByName } from '~/models/project.server';
 import { requireUserId } from '~/session.server';
 
 export const meta: MetaFunction = () => {
@@ -136,9 +133,6 @@ const LayoutWrapper = ({ children }: React.PropsWithChildren<{}>) => {
   );
 };
 
-const randomColor = () =>
-  `#${Math.floor(Math.random() * 16777215).toString(16)}`;
-
 export default function NewProjectPage() {
   const data = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
@@ -148,7 +142,10 @@ export default function NewProjectPage() {
   const descriptionRef = React.useRef<HTMLTextAreaElement>(null);
   const colorRef = React.useRef<HTMLInputElement>(null);
 
-  const [color, setColor] = React.useState<Project['color']>(randomColor());
+  const [color, setColor] = React.useState<{
+    name: string;
+    hex: string;
+  }>(randomColor());
 
   React.useEffect(() => {
     if (actionData?.errors?.name) {
@@ -203,22 +200,28 @@ export default function NewProjectPage() {
           label="Color"
           placeholder="The color of your project"
           id="new-color"
-          name="color"
           ref={colorRef}
           withPicker={false}
-          withEyeDropper
+          disallowInput
           withAsterisk
           swatchesPerRow={6}
-          swatches={Object.keys(theme.colors).map(
-            (color) => theme.colors[color][6]
-          )}
+          swatches={Object.values(COLORS_MAP)}
           rightSection={
             <ActionIcon onClick={() => setColor(randomColor())}>
               <RefreshCcw size={16} />
             </ActionIcon>
           }
-          value={color}
-          onChange={setColor}
+          value={color.hex}
+          onChange={(value) => {
+            const color = Object.entries(COLORS_MAP).find(
+              ([, hex]) => hex === value
+            );
+            if (color) {
+              setColor({ name: color[0], hex: color[1] });
+            } else {
+              setColor(randomColor());
+            }
+          }}
           closeOnColorSwatchClick
           format="hex"
           required
@@ -226,6 +229,7 @@ export default function NewProjectPage() {
           error={actionData?.errors?.color}
           errorProps={{ children: actionData?.errors?.color }}
         />
+        <input type="hidden" name="color" value={color.name} />
 
         <Group position="left" mt="lg">
           <Button type="submit" leftIcon={<Save />} radius={theme.radius.md}>

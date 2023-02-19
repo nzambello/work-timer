@@ -6,7 +6,8 @@ import {
   Tabs,
   FileInput,
   Loader,
-  Flex
+  Flex,
+  useMantineTheme
 } from '@mantine/core';
 import {
   ActionArgs,
@@ -21,9 +22,7 @@ import { requireUserId } from '~/session.server';
 import { createProject, getProjectByName } from '~/models/project.server';
 import { createTimeEntry } from '~/models/timeEntry.server';
 import papaparse from 'papaparse';
-
-const randomColor = () =>
-  `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+import { randomColorName } from '~/utils';
 
 export const meta: MetaFunction = () => {
   return {
@@ -107,12 +106,14 @@ export async function action({ request, params }: ActionArgs) {
     description: string;
     startTime: string;
     endTime?: string;
+    duration?: number;
     projectId?: string;
     projectName: string;
   }>((row: any) => ({
     description: row.description,
     startTime: row.startTime,
     endTime: row.endTime,
+    duration: row.duration,
     projectId: undefined,
     projectName: row.project
   }));
@@ -128,7 +129,7 @@ export async function action({ request, params }: ActionArgs) {
         userId,
         name: timeEntry.projectName,
         description: null,
-        color: randomColor()
+        color: randomColorName()
       });
 
       timeEntry.projectId = project.id;
@@ -141,7 +142,13 @@ export async function action({ request, params }: ActionArgs) {
       projectId: timeEntry.projectId,
       description: timeEntry.description,
       startTime: new Date(timeEntry.startTime),
-      endTime: timeEntry.endTime ? new Date(timeEntry.endTime) : null
+      endTime: timeEntry.endTime ? new Date(timeEntry.endTime) : null,
+      duration: timeEntry.duration
+        ? timeEntry.duration
+        : timeEntry.endTime
+        ? new Date(timeEntry.endTime).getTime() -
+          new Date(timeEntry.startTime).getTime()
+        : null
     });
   }
 

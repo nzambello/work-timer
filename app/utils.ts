@@ -3,6 +3,48 @@ import { useMemo } from 'react';
 
 import type { User } from '~/models/user.server';
 
+export const DEFAULT_COLORS = [
+  'dark',
+  'gray',
+  'red',
+  'pink',
+  'grape',
+  'violet',
+  'indigo',
+  'blue',
+  'cyan',
+  'green',
+  'lime',
+  'yellow',
+  'orange',
+  'teal'
+];
+export const COLORS_MAP: Record<string, string> = {
+  dark: '#25262b',
+  gray: '#868e96',
+  red: '#fa5252',
+  pink: '#e64980',
+  grape: '#be4bdb',
+  violet: '#7950f2',
+  indigo: '#4c6ef5',
+  blue: '#228be6',
+  cyan: '#15aabf',
+  green: '#12b886',
+  lime: '#40c057',
+  yellow: '#82c91e',
+  orange: '#fab005',
+  teal: '#fd7e14'
+};
+export const randomColorName = () =>
+  DEFAULT_COLORS[Math.floor(Math.random() * DEFAULT_COLORS.length)];
+export const randomColor = () => {
+  const colorName = randomColorName();
+  return {
+    name: colorName,
+    hex: COLORS_MAP[colorName]
+  };
+};
+
 const DEFAULT_REDIRECT = '/';
 
 /**

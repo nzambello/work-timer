@@ -101,13 +101,35 @@ export async function getTimeEntries({
   };
 }
 
+export function getTimeEntriesByDateAndProject({
+  userId,
+  dateFrom,
+  dateTo
+}: {
+  userId: User['id'];
+  dateFrom: Date;
+  dateTo: Date;
+}) {
+  return prisma.timeEntry.groupBy({
+    by: ['projectId'],
+    _sum: {
+      duration: true
+    },
+    where: {
+      userId,
+      startTime: { gte: dateFrom, lte: dateTo }
+    }
+  });
+}
+
 export function createTimeEntry({
   description,
   startTime,
   endTime,
+  duration,
   userId,
   projectId
-}: Pick<TimeEntry, 'description' | 'startTime' | 'endTime'> & {
+}: Pick<TimeEntry, 'description' | 'startTime' | 'endTime' | 'duration'> & {
   userId: User['id'];
   projectId: Project['id'];
 }) {
@@ -116,6 +138,7 @@ export function createTimeEntry({
       description,
       startTime,
       endTime,
+      duration,
       projectId,
       userId
     }
@@ -134,9 +157,13 @@ export function updateTimeEntry({
   description,
   startTime,
   endTime,
+  duration,
   projectId
 }: Partial<
-  Pick<TimeEntry, 'description' | 'startTime' | 'endTime' | 'projectId'>
+  Pick<
+    TimeEntry,
+    'description' | 'startTime' | 'endTime' | 'duration' | 'projectId'
+  >
 > & {
   timeEntryId: TimeEntry['id'];
 }) {
@@ -145,6 +172,7 @@ export function updateTimeEntry({
       description,
       startTime,
       endTime,
+      duration,
       projectId
     },
     where: {
@@ -172,6 +200,7 @@ export async function exportTimeEntries({ userId }: { userId: User['id'] }) {
       description: true,
       startTime: true,
       endTime: true,
+      duration: true,
       createdAt: true,
       project: {
         select: {
