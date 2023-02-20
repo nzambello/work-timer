@@ -153,25 +153,25 @@ function Document({
                 rel="icon"
                 type="image/png"
                 sizes="32x32"
-                href={`/images/favicon-32x32.png`}
+                href={`/favicon-32x32.png`}
               />
               <link
                 rel="icon"
                 type="image/png"
                 sizes="16x16"
-                href={`/images/favicon-32x32.png`}
+                href={`/favicon-32x32.png`}
               />
               <link
                 rel="icon"
                 type="image/png"
                 sizes="512x512"
-                href={`/images/android-chrome-512x512.png`}
+                href={`/android-chrome-512x512.png`}
               />
               <link
                 rel="icon"
                 type="image/png"
                 sizes="192x192"
-                href={`/images/android-chrome-192x192.png`}
+                href={`/android-chrome-192x192.png`}
               />
 
               {title ? <title>{title}</title> : null}
