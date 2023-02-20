@@ -127,6 +127,11 @@ function Document({
             <head>
               <meta charSet="utf-8" />
               <meta
+                httpEquiv="Content-Type"
+                content="text/html; charset=utf-8"
+              />
+              <meta name="application-name" content="Work Timer" />
+              <meta
                 name="viewport"
                 content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=no, viewport-fit=cover"
               />
@@ -137,7 +142,40 @@ function Document({
               />
               <meta name="format-detection" content="telephone=no" />
               <meta name="mobile-web-app-capable" content="yes" />
+
+              <link rel="icon" href="/favicon.ico" />
+              <link
+                rel="apple-touch-icon"
+                sizes="180x180"
+                href={`/apple-touch-icon.png`}
+              />
+              <link
+                rel="icon"
+                type="image/png"
+                sizes="32x32"
+                href={`/images/favicon-32x32.png`}
+              />
+              <link
+                rel="icon"
+                type="image/png"
+                sizes="16x16"
+                href={`/images/favicon-32x32.png`}
+              />
+              <link
+                rel="icon"
+                type="image/png"
+                sizes="512x512"
+                href={`/images/android-chrome-512x512.png`}
+              />
+              <link
+                rel="icon"
+                type="image/png"
+                sizes="192x192"
+                href={`/images/android-chrome-192x192.png`}
+              />
+
               {title ? <title>{title}</title> : null}
+
               <StylesPlaceholder />
               <Meta />
               <Links />
