@@ -326,6 +326,24 @@ export default function TimeEntryDetailsPage() {
                 newDate.setDate(date.getDate());
                 setStart(newDate);
               }}
+              firstDayOfWeek="monday"
+              renderDay={(date) => {
+                const day = date.getDate();
+                const today = new Date();
+
+                const isToday =
+                  date.getDate() === today.getDate() &&
+                  date.getMonth() === today.getMonth() &&
+                  date.getFullYear() === today.getFullYear();
+
+                return isToday ? (
+                  <Text component="div" weight="bold" underline>
+                    {day}
+                  </Text>
+                ) : (
+                  <Text component="div">{day}</Text>
+                );
+              }}
             />
             <TimeInput
               id="new-startTime-time"
@@ -389,6 +407,24 @@ export default function TimeEntryDetailsPage() {
                 newDate.setMonth(date.getMonth());
                 newDate.setDate(date.getDate());
                 setEnd(newDate);
+              }}
+              firstDayOfWeek="monday"
+              renderDay={(date) => {
+                const day = date.getDate();
+                const today = new Date();
+
+                const isToday =
+                  date.getDate() === today.getDate() &&
+                  date.getMonth() === today.getMonth() &&
+                  date.getFullYear() === today.getFullYear();
+
+                return isToday ? (
+                  <Text component="div" weight="bold" underline>
+                    {day}
+                  </Text>
+                ) : (
+                  <Text component="div">{day}</Text>
+                );
               }}
             />
             <TimeInput

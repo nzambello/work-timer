@@ -312,6 +312,7 @@ export default function NewTimeEntryPage() {
               locale="it"
               placeholder="Start date"
               label="Start date"
+              firstDayOfWeek="monday"
               aria-invalid={actionData?.errors?.startTime ? true : undefined}
               error={actionData?.errors?.startTime}
               errorProps={{ children: actionData?.errors?.startTime }}
@@ -323,6 +324,23 @@ export default function NewTimeEntryPage() {
                 newDate.setMonth(date.getMonth());
                 newDate.setDate(date.getDate());
                 setStart(newDate);
+              }}
+              renderDay={(date) => {
+                const day = date.getDate();
+                const today = new Date();
+
+                const isToday =
+                  date.getDate() === today.getDate() &&
+                  date.getMonth() === today.getMonth() &&
+                  date.getFullYear() === today.getFullYear();
+
+                return isToday ? (
+                  <Text component="div" weight="bold" underline>
+                    {day}
+                  </Text>
+                ) : (
+                  <Text component="div">{day}</Text>
+                );
               }}
             />
             <TimeInput
@@ -371,6 +389,7 @@ export default function NewTimeEntryPage() {
               locale="it"
               placeholder="End date"
               label="End date"
+              firstDayOfWeek="monday"
               aria-invalid={actionData?.errors?.endTime ? true : undefined}
               error={actionData?.errors?.endTime}
               errorProps={{ children: actionData?.errors?.endTime }}
@@ -382,6 +401,23 @@ export default function NewTimeEntryPage() {
                 newDate.setMonth(date.getMonth());
                 newDate.setDate(date.getDate());
                 setEnd(newDate);
+              }}
+              renderDay={(date) => {
+                const day = date.getDate();
+                const today = new Date();
+
+                const isToday =
+                  date.getDate() === today.getDate() &&
+                  date.getMonth() === today.getMonth() &&
+                  date.getFullYear() === today.getFullYear();
+
+                return isToday ? (
+                  <Text component="div" weight="bold" underline>
+                    {day}
+                  </Text>
+                ) : (
+                  <Text component="div">{day}</Text>
+                );
               }}
             />
             <TimeInput
