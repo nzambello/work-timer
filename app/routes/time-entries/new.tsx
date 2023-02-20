@@ -21,7 +21,7 @@ import {
   useNavigate
 } from '@remix-run/react';
 import * as React from 'react';
-import { AlertTriangle, Play } from 'react-feather';
+import { AlertTriangle, Play, Save } from 'react-feather';
 import { getProjects } from '~/models/project.server';
 import { createTimeEntry, stopAllTimeEntries } from '~/models/timeEntry.server';
 import { requireUserId } from '~/session.server';
@@ -411,8 +411,12 @@ export default function NewTimeEntryPage() {
         </Stack>
 
         <Group position="left" mt="lg">
-          <Button type="submit" leftIcon={<Play />} radius={theme.radius.md}>
-            Start
+          <Button
+            type="submit"
+            leftIcon={end ? <Save /> : <Play />}
+            radius={theme.radius.md}
+          >
+            {end ? 'Save' : 'Start'}
           </Button>
         </Group>
       </Form>

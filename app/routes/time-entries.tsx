@@ -134,7 +134,7 @@ export default function TimeEntriesPage() {
           leftIcon={<Play />}
           sx={{ marginTop: theme.spacing.sm, marginBottom: theme.spacing.sm }}
         >
-          Start
+          New
         </Button>
         <NativeSelect
           sx={{
