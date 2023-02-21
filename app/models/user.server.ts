@@ -51,7 +51,6 @@ export async function verifyLogin(
     password,
     userWithPassword.password.hash
   );
-  console.log(isValid, password, userWithPassword.password.hash);
 
   if (!isValid) {
     return null;

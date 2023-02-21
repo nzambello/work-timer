@@ -1,25 +1,34 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
-import { Form, useActionData, useSearchParams } from '@remix-run/react';
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useSearchParams
+} from '@remix-run/react';
 import * as React from 'react';
 import {
   TextInput,
   Box,
-  Checkbox,
   Group,
   Button,
-  PasswordInput
+  PasswordInput,
+  Title
 } from '@mantine/core';
 import { AtSign, Lock } from 'react-feather';
-
 import { verifyLogin } from '~/models/user.server';
 import { createUserSession, getUserId } from '~/session.server';
 import { safeRedirect, validateEmail } from '~/utils';
+import { isSignupAllowed } from '~/config.server';
 
 export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
   if (userId) return redirect('/time-entries');
-  return json({});
+
+  return json({
+    ALLOW_USER_SIGNUP: isSignupAllowed()
+  });
 }
 
 export async function action({ request }: ActionArgs) {
@@ -54,7 +63,12 @@ export async function action({ request }: ActionArgs) {
 
   if (!user) {
     return json(
-      { errors: { email: 'Invalid email or password', password: null } },
+      {
+        errors: {
+          email: 'Invalid email or password',
+          password: 'Invalid email or password'
+        }
+      },
       { status: 400 }
     );
   }
@@ -79,6 +93,7 @@ export default function LoginPage() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo') || '/time-entries';
   const actionData = useActionData<typeof action>();
+  const loaderData = useLoaderData<typeof loader>();
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
@@ -92,21 +107,9 @@ export default function LoginPage() {
 
   return (
     <Box sx={{ maxWidth: 300 }} mx="auto">
-      <h1
-        style={{
-          position: 'absolute',
-          width: '1px',
-          height: '1px',
-          padding: 0,
-          margin: '-1px',
-          overflow: 'hidden',
-          clip: 'rect(0,0,0,0)',
-          whiteSpace: 'nowrap',
-          border: 0
-        }}
-      >
+      <Title order={2} my="lg">
         Login
-      </h1>
+      </Title>
       <Form method="post" noValidate>
         <TextInput
           mb={12}
@@ -144,9 +147,28 @@ export default function LoginPage() {
 
         <input type="hidden" name="redirectTo" value={redirectTo} />
 
-        <Group position="center" mt="md">
+        <Group position="center" mt="xl">
           <Button type="submit">Log In</Button>
         </Group>
+
+        {!!loaderData?.ALLOW_USER_SIGNUP && (
+          <Box
+            mt="md"
+            sx={{
+              textAlign: 'center'
+            }}
+          >
+            New user?{' '}
+            <Link
+              to={{
+                pathname: '/signup',
+                search: searchParams.toString()
+              }}
+            >
+              <strong>Sign up</strong>
+            </Link>
+          </Box>
+        )}
       </Form>
     </Box>
   );

@@ -435,7 +435,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                   component={Link}
                   to="/login"
                 >
-                  Login
+                  Sign in
                 </Button>
               )}
             </div>
