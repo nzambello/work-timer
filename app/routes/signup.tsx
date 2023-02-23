@@ -238,6 +238,7 @@ export default function SignUpPage() {
               <PasswordInput
                 mb={12}
                 withAsterisk
+                required
                 label="Password"
                 id="password"
                 ref={passwordRef}
@@ -272,6 +273,7 @@ export default function SignUpPage() {
         <PasswordInput
           mb={12}
           withAsterisk
+          required
           label="Confirm password"
           id="confirm-password"
           ref={passwordRef}

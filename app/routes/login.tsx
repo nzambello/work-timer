@@ -132,6 +132,7 @@ export default function LoginPage() {
         <PasswordInput
           mb={12}
           withAsterisk
+          required
           label="Password"
           id="password"
           ref={passwordRef}
