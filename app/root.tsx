@@ -34,7 +34,8 @@ import {
   Group,
   UnstyledButton,
   ThemeIcon,
-  NavLink
+  NavLink,
+  Menu
 } from '@mantine/core';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { StylesPlaceholder } from '@mantine/remix';
@@ -54,7 +55,11 @@ import {
   Briefcase,
   BarChart2,
   FileText,
-  Upload
+  Upload,
+  Settings,
+  Lock,
+  User,
+  Users
 } from 'react-feather';
 import { NotificationsProvider } from '@mantine/notifications';
 
@@ -267,7 +272,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                     }`
                   })}
                 >
-                  <Group position="apart" align="center">
+                  <Group position="left" align="center">
                     <ActionIcon
                       variant="default"
                       onClick={() => toggleColorScheme()}
@@ -280,12 +285,13 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                         <Moon size={16} />
                       )}
                     </ActionIcon>
+                    <Text size="sm">Toggle theme</Text>
                   </Group>
                 </Box>
               </Navbar.Section>
             </MediaQuery>
             {user && (
-              <Navbar.Section grow mt="md">
+              <Navbar.Section mt="md">
                 <NavLink
                   component={Link}
                   to="/"
@@ -349,21 +355,50 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
             )}
             {user && (
               <Navbar.Section>
-                <Form action="/logout" method="post">
-                  <UnstyledButton type="submit" ml="sm" title="Logout">
-                    <Group>
-                      <ThemeIcon variant="light">
-                        <LogOut size={16} />
-                      </ThemeIcon>
-                      <div>
-                        <Text>{user.email.split('@')[0]}</Text>
-                        <Text size="xs" color="dimmed">
-                          Click to logout
-                        </Text>
-                      </div>
-                    </Group>
-                  </UnstyledButton>
-                </Form>
+                <Menu shadow="md" width={200}>
+                  <Menu.Target>
+                    <UnstyledButton w="100%" title="Account / Logout" p="xs">
+                      <Group w="100%">
+                        <ThemeIcon
+                          variant="light"
+                          sx={{
+                            flexShrink: 1
+                          }}
+                        >
+                          <User size={16} />
+                        </ThemeIcon>
+                        <div>
+                          <Text
+                            sx={{
+                              flex: 1
+                            }}
+                          >
+                            {user.email.split('@')[0]}
+                          </Text>
+                          <Text size="xs" color="dimmed">
+                            {user.email.split('@')[1]}
+                          </Text>
+                        </div>
+                      </Group>
+                    </UnstyledButton>
+                  </Menu.Target>
+
+                  <Menu.Dropdown>
+                    <Menu.Label>Account</Menu.Label>
+                    <Menu.Item
+                      icon={<Settings size={14} />}
+                      component={Link}
+                      to="/account"
+                    >
+                      Settings
+                    </Menu.Item>
+                    <Form action="/logout" method="post" noValidate>
+                      <Menu.Item icon={<LogOut size={14} />} type="submit">
+                        Logout
+                      </Menu.Item>
+                    </Form>
+                  </Menu.Dropdown>
+                </Menu>
               </Navbar.Section>
             )}
           </Navbar>
