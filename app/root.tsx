@@ -35,7 +35,8 @@ import {
   UnstyledButton,
   ThemeIcon,
   NavLink,
-  Menu
+  Menu,
+  Badge
 } from '@mantine/core';
 import { useColorScheme, useLocalStorage } from '@mantine/hooks';
 import { StylesPlaceholder } from '@mantine/remix';
@@ -44,6 +45,7 @@ import {
   startNavigationProgress,
   completeNavigationProgress
 } from '@mantine/nprogress';
+import type { User as UserType } from './models/user.server';
 import { getUser } from './session.server';
 import {
   Sun,
@@ -234,7 +236,9 @@ export function CatchBoundary() {
 }
 
 function Layout({ children }: React.PropsWithChildren<{}>) {
-  let user = useMatches().find((m) => m.id === 'root')?.data?.user;
+  let user = useMatches().find((m) => m.id === 'root')?.data?.user as
+    | UserType
+    | undefined;
   const [opened, setOpened] = useState(false);
   const location = useLocation();
   const theme = useMantineTheme();
@@ -291,7 +295,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
               </Navbar.Section>
             </MediaQuery>
             {user && (
-              <Navbar.Section mt="md" grow>
+              <Navbar.Section mt="md" grow={!user.admin}>
                 <NavLink
                   component={Link}
                   to="/"
@@ -350,6 +354,34 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                   }
                   variant="light"
                   active={location.pathname.includes('/importexport')}
+                />
+              </Navbar.Section>
+            )}
+            {!!user?.admin && (
+              <Navbar.Section
+                grow
+                sx={{
+                  marginTop: 16,
+                  paddingTop: 16,
+                  borderTop: `1px solid ${
+                    theme.colorScheme === 'dark'
+                      ? theme.colors.dark[4]
+                      : theme.colors.gray[2]
+                  }`
+                }}
+              >
+                <NavLink
+                  component={Link}
+                  to="/users"
+                  label="Users"
+                  icon={
+                    <ThemeIcon variant="light">
+                      <Users size={16} />
+                    </ThemeIcon>
+                  }
+                  rightSection={<Badge variant="light">ADMIN</Badge>}
+                  variant="light"
+                  active={location.pathname.includes('/users')}
                 />
               </Navbar.Section>
             )}

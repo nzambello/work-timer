@@ -19,7 +19,8 @@ import {
   Title,
   Popover,
   Progress,
-  Modal
+  Modal,
+  Badge
 } from '@mantine/core';
 import { AtSign, Check, Lock, Save, Trash, X } from 'react-feather';
 import { requireUser } from '~/session.server';
@@ -80,6 +81,16 @@ export default function Account() {
       <Title order={2} my="lg">
         Account
       </Title>
+
+      {loaderData.user.admin && (
+        <Text>
+          Role:{' '}
+          <Badge variant="light" mb="md">
+            ADMIN
+          </Badge>
+        </Text>
+      )}
+
       <Form method="post" noValidate>
         <TextInput
           mb={12}

@@ -54,6 +54,10 @@ export async function deleteUserByEmail(email: User['email']) {
   return prisma.user.delete({ where: { email } });
 }
 
+export async function deleteUserById(id: User['id']) {
+  return prisma.user.delete({ where: { id } });
+}
+
 export async function verifyLogin(
   email: User['email'],
   password: Password['hash']
@@ -81,4 +85,50 @@ export async function verifyLogin(
   const { password: _password, ...userWithoutPassword } = userWithPassword;
 
   return userWithoutPassword;
+}
+
+export async function getUsers({
+  search,
+  page,
+  size,
+  orderBy,
+  order
+}: {
+  search?: string;
+  page?: number;
+  size?: number;
+  orderBy?: string;
+  order?: 'asc' | 'desc';
+}) {
+  const totalUsers = await prisma.user.count();
+  const filteredTotal = await prisma.user.count({
+    where: {
+      email: {
+        contains: search || undefined
+      }
+    }
+  });
+  const paginatedUsers = await prisma.user.findMany({
+    where: {
+      email: {
+        contains: search || undefined
+      }
+    },
+    orderBy: {
+      [orderBy || 'createdAt']: order || 'desc'
+    },
+    skip: page && size ? (page - 1) * size : 0,
+    take: size
+  });
+
+  const nextPage = page && size && totalUsers > page * size ? page + 1 : null;
+  const previousPage = page && page > 2 ? page - 1 : null;
+
+  return {
+    total: totalUsers,
+    filteredTotal,
+    users: paginatedUsers,
+    nextPage,
+    previousPage
+  };
 }

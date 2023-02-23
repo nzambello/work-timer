@@ -4,14 +4,32 @@ import bcrypt from 'bcryptjs';
 const prisma = new PrismaClient();
 
 async function seed() {
-  const email = 'admin@rawmaterial.it';
+  const email = 'nicola@rawmaterial.it';
+  const adminEmail = 'admin@rawmaterial.it';
 
   // cleanup the existing database
   await prisma.user.delete({ where: { email } }).catch(() => {
     // no worries if it doesn't exist yet
   });
 
+  // cleanup the existing database
+  await prisma.user.delete({ where: { email: adminEmail } }).catch(() => {
+    // no worries if it doesn't exist yet
+  });
+
   const hashedPassword = await bcrypt.hash('rawmaterial', 10);
+
+  const admin = await prisma.user.create({
+    data: {
+      email: adminEmail,
+      admin: true,
+      password: {
+        create: {
+          hash: hashedPassword
+        }
+      }
+    }
+  });
 
   const user = await prisma.user.create({
     data: {
