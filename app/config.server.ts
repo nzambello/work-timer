@@ -3,6 +3,5 @@ export const ALLOW_USER_SIGNUP = Boolean(
 );
 
 export const isSignupAllowed = () => {
-  console.log('ALLOW_USER_SIGNUP', ALLOW_USER_SIGNUP);
   return !!ALLOW_USER_SIGNUP;
 };
