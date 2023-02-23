@@ -14,7 +14,14 @@ const TimeElapsed = ({ startTime, endTime }: Props) => {
   );
 
   useEffect(() => {
-    if (endTime) return;
+    if (endTime) {
+      setElapsed(
+        (new Date(endTime || Date.now()).getTime() -
+          new Date(startTime).getTime()) /
+          1000
+      );
+      return;
+    }
     const interval = setInterval(() => {
       setElapsed(
         (new Date(endTime || Date.now()).getTime() -

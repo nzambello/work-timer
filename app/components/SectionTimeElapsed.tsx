@@ -36,7 +36,10 @@ const SectionTimeElapsed = ({
   const [elapsed, setElapsed] = useState(total || getElapsedTime());
 
   useEffect(() => {
-    if (!timeEntries.some((timeEntry) => !timeEntry.endTime)) return;
+    if (!timeEntries.some((timeEntry) => !timeEntry.endTime)) {
+      setElapsed(getElapsedTime());
+      return;
+    }
 
     const interval = setInterval(() => {
       setElapsed(getElapsedTime());
