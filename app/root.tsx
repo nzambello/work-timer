@@ -291,7 +291,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
               </Navbar.Section>
             </MediaQuery>
             {user && (
-              <Navbar.Section mt="md">
+              <Navbar.Section mt="md" grow>
                 <NavLink
                   component={Link}
                   to="/"
@@ -354,7 +354,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
               </Navbar.Section>
             )}
             {user && (
-              <Navbar.Section>
+              <Navbar.Section mt="lg">
                 <Menu shadow="md" width={200}>
                   <Menu.Target>
                     <UnstyledButton w="100%" title="Account / Logout" p="xs">
