@@ -145,7 +145,33 @@ export function createTimeEntry({
   });
 }
 
-export function stopAllTimeEntries(userId: User['id']) {
+export async function updateDuration(userId: User['id']) {
+  const timeEntriesWithoutDuration = await prisma.timeEntry.findMany({
+    where: {
+      userId,
+      endTime: { not: null },
+      duration: null
+    }
+  });
+
+  Promise.all(
+    timeEntriesWithoutDuration.map(
+      async (entry) =>
+        await prisma.timeEntry.update({
+          where: { id: entry.id },
+          data: {
+            duration:
+              (entry.endTime || new Date(Date.now())).getTime() -
+              entry.startTime.getTime()
+          }
+        })
+    )
+  );
+}
+
+export async function stopAllTimeEntries(userId: User['id']) {
+  await updateDuration(userId);
+
   return prisma.timeEntry.updateMany({
     where: { userId, endTime: null },
     data: { endTime: new Date() }

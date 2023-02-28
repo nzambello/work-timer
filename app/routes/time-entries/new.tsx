@@ -49,10 +49,16 @@ export async function action({ request }: ActionArgs) {
   const userId = await requireUserId(request);
 
   const formData = await request.formData();
-  const description = formData.get('description');
-  const projectId = formData.get('projectId');
-  let startTime = formData.get('startTime');
-  let endTime = formData.get('endTime');
+  const description = (formData.get('description') || undefined) as
+    | string
+    | undefined;
+  const projectId = (formData.get('projectId') || undefined) as
+    | string
+    | undefined;
+  let startTime = (formData.get('startTime') || undefined) as
+    | string
+    | undefined;
+  let endTime = (formData.get('endTime') || undefined) as string | undefined;
 
   if (typeof description !== 'string' || description.length === 0) {
     return json(
@@ -97,7 +103,7 @@ export async function action({ request }: ActionArgs) {
   if (
     startTime &&
     typeof startTime === 'string' &&
-    Number.isNaN(Date.parse(startTime))
+    !(startTime === 'now' || !Number.isNaN(Date.parse(startTime)))
   ) {
     return json(
       {
@@ -114,7 +120,7 @@ export async function action({ request }: ActionArgs) {
   if (
     endTime &&
     typeof endTime === 'string' &&
-    Number.isNaN(Date.parse(endTime))
+    !(endTime === 'now' || !Number.isNaN(Date.parse(endTime)))
   ) {
     return json(
       {
@@ -128,12 +134,18 @@ export async function action({ request }: ActionArgs) {
       { status: 422 }
     );
   }
+
+  let startDate = new Date(startTime === 'now' ? Date.now() : startTime);
+  let endDate = endTime
+    ? new Date(endTime === 'now' ? Date.now() : endTime)
+    : undefined;
+
   if (
-    startTime &&
-    endTime &&
+    startDate &&
+    endDate &&
     typeof startTime === 'string' &&
     typeof endTime === 'string' &&
-    new Date(startTime) > new Date(endTime)
+    startDate > endDate
   ) {
     return json(
       {
@@ -152,12 +164,9 @@ export async function action({ request }: ActionArgs) {
 
   const timeEntry = await createTimeEntry({
     description,
-    startTime: new Date(startTime),
-    endTime: typeof endTime === 'string' ? new Date(endTime) : null,
-    duration:
-      typeof endTime === 'string'
-        ? new Date(endTime).getTime() - new Date(startTime).getTime()
-        : null,
+    startTime: startDate,
+    endTime: endDate || null,
+    duration: endDate ? endDate.getTime() - startDate.getTime() : null,
     userId,
     projectId
   });

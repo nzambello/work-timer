@@ -387,11 +387,7 @@ export default function TimeEntriesPage() {
                     </Menu>
                     {timeEntry.endTime ? (
                       <Form method="post" action="/time-entries/new">
-                        <input
-                          type="hidden"
-                          name="startTime"
-                          value={new Date(Date.now()).toISOString()}
-                        />
+                        <input type="hidden" name="startTime" value="now" />
                         <input
                           type="hidden"
                           name="description"
@@ -421,11 +417,7 @@ export default function TimeEntriesPage() {
                         method="patch"
                         action={`/time-entries/${timeEntry.id}`}
                       >
-                        <input
-                          type="hidden"
-                          name="endTime"
-                          value={new Date().toISOString()}
-                        />
+                        <input type="hidden" name="endTime" value="now" />
                         <ActionIcon
                           type="submit"
                           variant="filled"

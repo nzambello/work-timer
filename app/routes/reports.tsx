@@ -12,7 +12,10 @@ import {
 } from '@mantine/core';
 import { MetaFunction, LoaderArgs, redirect, json } from '@remix-run/node';
 import { Link, useFetcher, useLoaderData, useNavigate } from '@remix-run/react';
-import { getTimeEntriesByDateAndProject } from '~/models/timeEntry.server';
+import {
+  getTimeEntriesByDateAndProject,
+  updateDuration
+} from '~/models/timeEntry.server';
 import { getProjects, Project } from '~/models/project.server';
 import { requireUserId } from '~/session.server';
 import { DateRangePicker, DateRangePickerValue } from '@mantine/dates';
@@ -42,6 +45,8 @@ export async function loader({ request }: LoaderArgs) {
   const dateTo = url.searchParams.get('dateTo')
     ? dayjs(url.searchParams.get('dateTo')).toDate()
     : dayjs().endOf('month').toDate();
+
+  await updateDuration(userId);
 
   return json({
     timeByProject: await getTimeEntriesByDateAndProject({

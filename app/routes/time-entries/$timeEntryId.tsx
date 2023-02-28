@@ -90,7 +90,7 @@ export async function action({ request, params }: ActionArgs) {
     if (
       startTime &&
       typeof startTime === 'string' &&
-      Number.isNaN(Date.parse(startTime))
+      !(startTime === 'now' || !Number.isNaN(Date.parse(startTime)))
     ) {
       return json(
         {
@@ -107,7 +107,7 @@ export async function action({ request, params }: ActionArgs) {
     if (
       endTime &&
       typeof endTime === 'string' &&
-      Number.isNaN(Date.parse(endTime))
+      !(endTime === 'now' || !Number.isNaN(Date.parse(endTime)))
     ) {
       return json(
         {
@@ -121,12 +121,20 @@ export async function action({ request, params }: ActionArgs) {
         { status: 422 }
       );
     }
+
+    let startDate = startTime
+      ? new Date(startTime === 'now' ? Date.now() : startTime)
+      : undefined;
+    let endDate = endTime
+      ? new Date(endTime === 'now' ? Date.now() : endTime)
+      : undefined;
+
     if (
-      startTime &&
-      endTime &&
+      startDate &&
+      endDate &&
       typeof startTime === 'string' &&
       typeof endTime === 'string' &&
-      new Date(startTime) > new Date(endTime)
+      startDate > endDate
     ) {
       return json(
         {
@@ -145,12 +153,10 @@ export async function action({ request, params }: ActionArgs) {
       timeEntryId: params.timeEntryId,
       description,
       projectId,
-      startTime: startTime ? new Date(startTime) : undefined,
-      endTime: endTime ? new Date(endTime) : undefined,
+      startTime: startDate,
+      endTime: endDate,
       duration:
-        endTime && startTime
-          ? new Date(endTime).getTime() - new Date(startTime).getTime()
-          : undefined
+        endDate && startDate ? endDate.getTime() - startDate.getTime() : null
     });
   }
 
