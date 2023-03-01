@@ -17,7 +17,7 @@ import {
   updateDuration
 } from '~/models/timeEntry.server';
 import { getProjects, Project } from '~/models/project.server';
-import { requireUserId } from '~/session.server';
+import { requireUser } from '~/session.server';
 import { DateRangePicker, DateRangePickerValue } from '@mantine/dates';
 import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
@@ -35,8 +35,8 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await requireUserId(request);
-  if (!userId) return redirect('/login');
+  const user = await requireUser(request);
+  if (!user) return redirect('/login');
 
   const url = new URL(request.url);
   const dateFrom = url.searchParams.get('dateFrom')
@@ -46,19 +46,21 @@ export async function loader({ request }: LoaderArgs) {
     ? dayjs(url.searchParams.get('dateTo')).endOf('day').toDate()
     : dayjs().endOf('month').endOf('day').toDate();
 
-  await updateDuration(userId);
+  await updateDuration(user.id);
 
   return json({
+    user,
     timeByProject: await getTimeEntriesByDateAndProject({
-      userId,
+      userId: user.id,
       dateFrom,
       dateTo
     }),
-    projects: await getProjects({ userId })
+    projects: await getProjects({ userId: user.id })
   });
 }
 
 export default function ReportPage() {
+  const data = useLoaderData<typeof loader>();
   const reports = useFetcher<typeof loader>();
 
   const [dateRange, setDateRange] = useState<DateRangePickerValue>([
@@ -76,7 +78,9 @@ export default function ReportPage() {
     }
   }, [dateRange]);
 
-  const [costPerHour, setCostPerHour] = useState<number>();
+  const [hourlyRate, setHourlyRate] = useState<number | undefined>(
+    data.user.defaultHourlyRate || undefined
+  );
 
   const mobile = useMediaQuery('(max-width: 600px)');
 
@@ -99,7 +103,14 @@ export default function ReportPage() {
       </h1>
 
       <reports.Form action="/reports" method="get">
-        <Paper p="sm" shadow="sm" radius="md" component="fieldset">
+        <Paper
+          p="sm"
+          aria-controls="time-entries"
+          shadow="sm"
+          radius="md"
+          withBorder
+          component="fieldset"
+        >
           <DateRangePicker
             label="Select date range"
             placeholder="Pick dates range"
@@ -206,9 +217,9 @@ export default function ReportPage() {
 
       <Box mt="md" maw={300}>
         <NumberInput
-          label="Cost per hour"
-          value={costPerHour}
-          onChange={setCostPerHour}
+          label="Hourly rate"
+          value={hourlyRate || data.user.defaultHourlyRate || undefined}
+          onChange={setHourlyRate}
         />
       </Box>
 
@@ -218,7 +229,7 @@ export default function ReportPage() {
             <tr>
               <th>Project</th>
               <th>Time</th>
-              {costPerHour && <th>Billing</th>}
+              {hourlyRate && <th>Billing</th>}
             </tr>
           </thead>
           <tbody>
@@ -247,15 +258,15 @@ export default function ReportPage() {
                 <td>
                   {(projectData._sum.duration / 1000 / 60 / 60).toFixed(2)} h
                 </td>
-                {costPerHour && (
+                {hourlyRate && (
                   <td>
                     {(
-                      (projectData._sum.duration * costPerHour) /
+                      (projectData._sum.duration * hourlyRate) /
                       1000 /
                       60 /
                       60
                     ).toFixed(2)}{' '}
-                    €
+                    {reports.data?.user?.currency ?? '€'}
                   </td>
                 )}
               </tr>

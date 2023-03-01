@@ -21,7 +21,8 @@ import {
   Progress,
   Modal,
   Badge,
-  Select
+  Select,
+  NumberInput
 } from '@mantine/core';
 import { AtSign, Check, Lock, Save, Trash, X } from 'react-feather';
 import { requireUser } from '~/session.server';
@@ -42,6 +43,12 @@ export async function action({ request }: ActionArgs) {
   const dateFormat = (formData.get('dateFormat') || undefined) as
     | string
     | undefined;
+  const currency = (formData.get('currency') || undefined) as
+    | string
+    | undefined;
+  const defaultHourlyRate = (formData.get('defaultHourlyRate') || undefined) as
+    | string
+    | undefined;
 
   if (email && !validateEmail(email)) {
     return json(
@@ -59,8 +66,19 @@ export async function action({ request }: ActionArgs) {
     await updateUserEmail(user.id, email);
   }
 
-  if (dateFormat && dateFormat !== user.dateFormat) {
-    await updateUserPrefs(user.id, { dateFormat });
+  const prefs = {
+    dateFormat:
+      dateFormat && dateFormat !== user.dateFormat ? dateFormat : undefined,
+    currency: currency && currency !== user.currency ? currency : undefined,
+    defaultHourlyRate:
+      defaultHourlyRate &&
+      parseInt(defaultHourlyRate || '-1', 10) !== user.defaultHourlyRate
+        ? parseInt(defaultHourlyRate, 10)
+        : undefined
+  };
+
+  if (Object.values(prefs).some((v) => v !== undefined)) {
+    await updateUserPrefs(user.id, prefs);
   }
 
   return redirect('/account/updatesuccess');
@@ -89,6 +107,11 @@ export default function Account() {
   const [dateFormat, setDateFormat] = React.useState(
     loaderData.user.dateFormat
   );
+
+  const [isHydrated, setIsHydrated] = React.useState(false);
+  React.useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   return (
     <Box sx={{ maxWidth: 300 }} mx="auto">
@@ -188,23 +211,35 @@ export default function Account() {
           ])}
         />
 
-        <p>Example:</p>
-        <blockquote>
-          {Intl.DateTimeFormat(dateFormat, {
-            dateStyle: 'full',
-            timeZone: 'UTC'
-          }).format(new Date(Date.now()))}
-          <br />
-          {Intl.DateTimeFormat(dateFormat, {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-          }).format(new Date(Date.now()))}
-        </blockquote>
+        {isHydrated && (
+          <p>
+            Example:{' '}
+            {Intl.DateTimeFormat(dateFormat, {
+              dateStyle: 'full',
+              timeStyle: 'short',
+              timeZone: 'UTC'
+            }).format(new Date(Date.now()))}
+          </p>
+        )}
 
-        <Group position="center" mt="sm">
+        <TextInput
+          name="currency"
+          label="Currency"
+          placeholder="Select your currency"
+          defaultValue={loaderData.user.currency}
+          mb="lg"
+        />
+
+        <NumberInput
+          name="defaultHourlyRate"
+          label="Hourly rate"
+          placeholder="Enter your hourly rate"
+          defaultValue={loaderData.user.defaultHourlyRate || undefined}
+          min={0}
+          mb="lg"
+        />
+
+        <Group position="center" mt="lg">
           <Button type="submit" leftIcon={<Save size={14} />}>
             Save
           </Button>

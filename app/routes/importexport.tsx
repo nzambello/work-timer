@@ -46,7 +46,8 @@ export async function action({ request, params }: ActionArgs) {
 
   const parsed = papaparse.parse(fileData, {
     header: true,
-    skipEmptyLines: true
+    skipEmptyLines: true,
+    dynamicTyping: true
   });
 
   if (parsed.errors.length) {
@@ -145,7 +146,7 @@ export async function action({ request, params }: ActionArgs) {
       endTime: timeEntry.endTime ? new Date(timeEntry.endTime) : null,
       duration: timeEntry.duration
         ? timeEntry.duration
-        : timeEntry.endTime
+        : timeEntry.endTime && timeEntry.startTime
         ? new Date(timeEntry.endTime).getTime() -
           new Date(timeEntry.startTime).getTime()
         : null
