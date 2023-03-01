@@ -59,7 +59,7 @@ export async function loader({ request }: LoaderArgs) {
   const size = url.searchParams.get('size')
     ? parseInt(url.searchParams.get('size')!, 10)
     : 25;
-  const orderBy = url.searchParams.get('orderBy') || 'createdAt';
+  const orderBy = url.searchParams.get('orderBy') || 'startTime';
   const order = url.searchParams.get('order') || 'desc';
 
   return json({
