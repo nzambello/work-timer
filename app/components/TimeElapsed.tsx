@@ -1,5 +1,7 @@
 import { Box, MediaQuery } from '@mantine/core';
+import { useMatches } from '@remix-run/react';
 import React, { useState, useEffect } from 'react';
+import { User } from '~/models/user.server';
 
 export interface Props {
   startTime: Date | string;
@@ -7,6 +9,9 @@ export interface Props {
 }
 
 const TimeElapsed = ({ startTime, endTime }: Props) => {
+  let user = useMatches().find((m) => m.id === 'root')?.data?.user as
+    | User
+    | undefined;
   const [elapsed, setElapsed] = useState(
     (new Date(endTime || Date.now()).getTime() -
       new Date(startTime).getTime()) /
@@ -70,19 +75,17 @@ const TimeElapsed = ({ startTime, endTime }: Props) => {
           }}
         >
           <span>
-            {Intl.DateTimeFormat('it-IT', {
+            {Intl.DateTimeFormat(user?.dateFormat || 'en-GB', {
               hour: '2-digit',
-              minute: '2-digit',
-              hour12: false
+              minute: '2-digit'
             }).format(new Date(startTime))}
           </span>
           <span dangerouslySetInnerHTML={{ __html: '&nbsp;&mdash;&nbsp;' }} />
           <span>
             {endTime
-              ? Intl.DateTimeFormat('it-IT', {
+              ? Intl.DateTimeFormat(user?.dateFormat || 'en-GB', {
                   hour: '2-digit',
-                  minute: '2-digit',
-                  hour12: false
+                  minute: '2-digit'
                 }).format(new Date(endTime))
               : 'now'}
           </span>

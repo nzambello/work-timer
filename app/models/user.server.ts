@@ -35,6 +35,18 @@ export async function updateUserEmail(id: User['id'], email: string) {
   });
 }
 
+export async function updateUserPrefs(
+  id: User['id'],
+  prefs: {
+    dateFormat?: User['dateFormat'];
+  }
+) {
+  return prisma.user.update({
+    where: { id },
+    data: { ...prefs }
+  });
+}
+
 export async function updateUserPassword(id: User['id'], password: string) {
   const hashedPassword = await bcrypt.hash(password, 10);
 

@@ -264,13 +264,12 @@ export default function Users() {
               </td>
               <td>
                 <Text>
-                  {Intl.DateTimeFormat('it-IT', {
+                  {Intl.DateTimeFormat(data.user.dateFormat, {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',
                     hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
+                    minute: '2-digit'
                   }).format(new Date(user.createdAt))}
                 </Text>
               </td>

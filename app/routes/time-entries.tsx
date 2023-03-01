@@ -36,7 +36,7 @@ import {
   Square,
   Trash
 } from 'react-feather';
-import { requireUserId } from '~/session.server';
+import { requireUser } from '~/session.server';
 import { getTimeEntries, TimeEntry } from '~/models/timeEntry.server';
 import TimeElapsed from '~/components/TimeElapsed';
 import SectionTimeElapsed from '~/components/SectionTimeElapsed';
@@ -49,8 +49,8 @@ export const meta: MetaFunction = () => {
 };
 
 export async function loader({ request }: LoaderArgs) {
-  const userId = await requireUserId(request);
-  if (!userId) return redirect('/login');
+  const user = await requireUser(request);
+  if (!user) return redirect('/login');
 
   const url = new URL(request.url);
   const page = url.searchParams.get('page')
@@ -63,10 +63,11 @@ export async function loader({ request }: LoaderArgs) {
   const order = url.searchParams.get('order') || 'desc';
 
   return json({
+    user,
     ...(await getTimeEntries({
       page,
       size,
-      userId,
+      userId: user.id,
       orderBy,
       order: order === 'asc' ? 'asc' : 'desc'
     }))
@@ -91,10 +92,9 @@ export default function TimeEntriesPage() {
       { entries: typeof data.timeEntries; total: number }
     > = {};
     data.timeEntries.forEach((timeEntry) => {
-      const date = Intl.DateTimeFormat('it-IT', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
+      const date = Intl.DateTimeFormat(data.user.dateFormat, {
+        dateStyle: 'full',
+        timeZone: 'UTC'
       }).format(new Date(timeEntry.startTime));
 
       if (!timeEntriesPerDay[date])
@@ -320,7 +320,7 @@ export default function TimeEntriesPage() {
                     alignItems: 'flex-end',
                     flexDirection: 'column',
                     justifyContent: 'space-between',
-                    flexShrink: 1,
+                    flexShrink: 0,
                     flexGrow: 0,
 
                     '@media (min-width: 601px)': {

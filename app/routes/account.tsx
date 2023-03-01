@@ -20,11 +20,12 @@ import {
   Popover,
   Progress,
   Modal,
-  Badge
+  Badge,
+  Select
 } from '@mantine/core';
 import { AtSign, Check, Lock, Save, Trash, X } from 'react-feather';
 import { requireUser } from '~/session.server';
-import { updateUserEmail } from '~/models/user.server';
+import { updateUserEmail, updateUserPrefs } from '~/models/user.server';
 import { validateEmail } from '~/utils';
 
 export async function loader({ request }: LoaderArgs) {
@@ -37,9 +38,12 @@ export async function loader({ request }: LoaderArgs) {
 export async function action({ request }: ActionArgs) {
   const user = await requireUser(request);
   const formData = await request.formData();
-  const email = formData.get('email');
+  const email = (formData.get('email') || undefined) as string | undefined;
+  const dateFormat = (formData.get('dateFormat') || undefined) as
+    | string
+    | undefined;
 
-  if (!validateEmail(email)) {
+  if (email && !validateEmail(email)) {
     return json(
       {
         errors: {
@@ -51,7 +55,13 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  await updateUserEmail(user.id, email);
+  if (email && email !== user.email) {
+    await updateUserEmail(user.id, email);
+  }
+
+  if (dateFormat && dateFormat !== user.dateFormat) {
+    await updateUserPrefs(user.id, { dateFormat });
+  }
 
   return redirect('/account/updatesuccess');
 }
@@ -76,14 +86,20 @@ export default function Account() {
     }
   }, [actionData]);
 
+  const [dateFormat, setDateFormat] = React.useState(
+    loaderData.user.dateFormat
+  );
+
   return (
     <Box sx={{ maxWidth: 300 }} mx="auto">
       <Title order={2} my="lg">
         Account
       </Title>
 
+      <Outlet />
+
       {loaderData.user.admin && (
-        <Text>
+        <Text mt="lg">
           Role:{' '}
           <Badge variant="light" mb="md">
             ADMIN
@@ -116,8 +132,6 @@ export default function Account() {
         </Group>
       </Form>
 
-      <Outlet />
-
       <Group position="center" mt="xl">
         <Button
           component={Link}
@@ -140,6 +154,62 @@ export default function Account() {
           Delete account
         </Button>
       </Group>
+
+      <Title order={3} mt="xl" mb="lg">
+        Preferences
+      </Title>
+
+      <Form method="post" noValidate>
+        <Select
+          name="dateFormat"
+          searchable
+          clearable={false}
+          label="Date format"
+          placeholder="Select date format"
+          defaultValue={dateFormat}
+          value={dateFormat}
+          onChange={(value) =>
+            setDateFormat(value || loaderData.user.dateFormat)
+          }
+          data={Intl.DateTimeFormat.supportedLocalesOf([
+            'en-GB',
+            'en-US',
+            'it-IT',
+            'de-DE',
+            'fr-FR',
+            'es-ES',
+            'pt-BR',
+            'ja-JP',
+            'zh-CN',
+            'zh-TW',
+            'ko-KR',
+            'uk-UA',
+            'ru-RU'
+          ])}
+        />
+
+        <p>Example:</p>
+        <blockquote>
+          {Intl.DateTimeFormat(dateFormat, {
+            dateStyle: 'full',
+            timeZone: 'UTC'
+          }).format(new Date(Date.now()))}
+          <br />
+          {Intl.DateTimeFormat(dateFormat, {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+          }).format(new Date(Date.now()))}
+        </blockquote>
+
+        <Group position="center" mt="sm">
+          <Button type="submit" leftIcon={<Save size={14} />}>
+            Save
+          </Button>
+        </Group>
+      </Form>
     </Box>
   );
 }

@@ -12,6 +12,8 @@ model User {
   email String  @unique
   admin Boolean @default(false)
 
+  dateFormat String @default("en-GB")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
