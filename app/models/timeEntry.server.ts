@@ -154,7 +154,7 @@ export async function updateDuration(userId: User['id']) {
     }
   });
 
-  Promise.all(
+  return Promise.all(
     timeEntriesWithoutDuration.map(
       async (entry) =>
         await prisma.timeEntry.update({

@@ -35,6 +35,7 @@ import invariant from 'tiny-invariant';
 import {
   deleteTimeEntry,
   getTimeEntry,
+  updateDuration,
   updateTimeEntry
 } from '~/models/timeEntry.server';
 import { requireUserId } from '~/session.server';
@@ -159,6 +160,8 @@ export async function action({ request, params }: ActionArgs) {
         endDate && startDate ? endDate.getTime() - startDate.getTime() : null
     });
   }
+
+  updateDuration(userId);
 
   return redirect('/time-entries');
 }

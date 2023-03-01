@@ -40,11 +40,11 @@ export async function loader({ request }: LoaderArgs) {
 
   const url = new URL(request.url);
   const dateFrom = url.searchParams.get('dateFrom')
-    ? dayjs(url.searchParams.get('dateFrom')).toDate()
-    : dayjs().startOf('month').toDate();
+    ? dayjs(url.searchParams.get('dateFrom')).startOf('day').toDate()
+    : dayjs().startOf('month').startOf('day').toDate();
   const dateTo = url.searchParams.get('dateTo')
-    ? dayjs(url.searchParams.get('dateTo')).toDate()
-    : dayjs().endOf('month').toDate();
+    ? dayjs(url.searchParams.get('dateTo')).endOf('day').toDate()
+    : dayjs().endOf('month').endOf('day').toDate();
 
   await updateDuration(userId);
 
@@ -62,8 +62,8 @@ export default function ReportPage() {
   const reports = useFetcher<typeof loader>();
 
   const [dateRange, setDateRange] = useState<DateRangePickerValue>([
-    dayjs().startOf('month').toDate(),
-    dayjs().endOf('month').toDate()
+    dayjs().startOf('month').startOf('day').toDate(),
+    dayjs().endOf('month').endOf('day').toDate()
   ]);
 
   useEffect(() => {
