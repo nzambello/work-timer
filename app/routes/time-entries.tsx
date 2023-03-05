@@ -15,7 +15,8 @@ import {
   Badge,
   ThemeIcon,
   Alert,
-  Box
+  Box,
+  MediaQuery
 } from '@mantine/core';
 import { json, LoaderArgs, MetaFunction, redirect } from '@remix-run/node';
 import {
@@ -40,6 +41,7 @@ import { requireUser } from '~/session.server';
 import { getTimeEntries, TimeEntry } from '~/models/timeEntry.server';
 import TimeElapsed from '~/components/TimeElapsed';
 import SectionTimeElapsed from '~/components/SectionTimeElapsed';
+import dayjs from 'dayjs';
 
 export const meta: MetaFunction = () => {
   return {
@@ -181,7 +183,7 @@ export default function TimeEntriesPage() {
         mt="lg"
         mb="md"
         mx="auto"
-        maw={500}
+        maw={800}
         sx={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -195,6 +197,54 @@ export default function TimeEntriesPage() {
         <Text size="sm" color="darkgray">
           {data.total} entries
         </Text>
+        <Divider
+          orientation="vertical"
+          sx={{
+            '@media (max-width: 600px)': {
+              display: 'none'
+            }
+          }}
+        />
+
+        <MediaQuery
+          query="(max-width: 600px)"
+          styles={{
+            display: 'none'
+          }}
+        >
+          <Box>
+            <SectionTimeElapsed
+              timeEntries={
+                data.timeEntries.filter(
+                  (t) =>
+                    new Date(t.startTime) >=
+                    new Date(new Date().getFullYear(), new Date().getMonth(), 1)
+                ) as any as TimeEntry[]
+              }
+              size="sm"
+              additionalLabel="this month"
+            />
+          </Box>
+        </MediaQuery>
+        <Divider
+          orientation="vertical"
+          sx={{
+            '@media (max-width: 600px)': {
+              display: 'none'
+            }
+          }}
+        />
+        <SectionTimeElapsed
+          timeEntries={
+            data.timeEntries.filter(
+              (t) =>
+                new Date(t.startTime) >=
+                dayjs(new Date()).startOf('week').toDate()
+            ) as any as TimeEntry[]
+          }
+          size="sm"
+          additionalLabel="this week"
+        />
         <Divider
           orientation="vertical"
           sx={{
@@ -220,25 +270,6 @@ export default function TimeEntriesPage() {
           }
           size="sm"
           additionalLabel="today"
-        />
-        <Divider
-          orientation="vertical"
-          sx={{
-            '@media (max-width: 600px)': {
-              display: 'none'
-            }
-          }}
-        />
-        <SectionTimeElapsed
-          timeEntries={
-            data.timeEntries.filter(
-              (t) =>
-                new Date(t.startTime) >=
-                new Date(new Date().getFullYear(), new Date().getMonth(), 1)
-            ) as any as TimeEntry[]
-          }
-          size="sm"
-          additionalLabel="this month"
         />
       </Group>
 
