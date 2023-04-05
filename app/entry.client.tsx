@@ -5,6 +5,10 @@ import { ClientProvider } from '@mantine/remix';
 
 function hydrate() {
   startTransition(() => {
+    document.querySelectorAll('html > script').forEach((s) => {
+      s.parentNode!.removeChild(s);
+    });
+
     hydrateRoot(
       document,
       <StrictMode>
