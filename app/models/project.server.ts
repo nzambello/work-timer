@@ -47,6 +47,9 @@ export async function getProjects({
     orderBy: {
       [orderBy || 'createdAt']: order || 'desc'
     },
+    include: {
+      timeEntries: true
+    },
     skip: page && size ? (page - 1) * size : 0,
     take: size
   });

@@ -24,6 +24,8 @@ import {
 import { AlertTriangle, Edit3, Plus, Settings, Trash } from 'react-feather';
 import { requireUserId } from '~/session.server';
 import { getProjects } from '~/models/project.server';
+import SectionTimeElapsed from '~/components/SectionTimeElapsed';
+import { TimeEntry } from '~/models/timeEntry.server';
 
 export const meta: MetaFunction = () => {
   return {
@@ -185,7 +187,18 @@ export default function Projects() {
                   marginLeft: '1rem'
                 }}
               >
-                <strong>{project.name}</strong>
+                <div
+                  style={{
+                    display: 'flex'
+                  }}
+                >
+                  <strong>{project.name}</strong>
+                  {!!project.timeEntries.length && (
+                    <Text size="sm" color="darkgray" ml="lg">
+                      {project.timeEntries.length} entries
+                    </Text>
+                  )}
+                </div>
                 <span
                   style={{
                     fontSize: '0.8em'
@@ -194,6 +207,29 @@ export default function Projects() {
                   {project.description}
                 </span>
               </div>
+              {project.timeEntries.length > 0 && (
+                <div
+                  style={{
+                    marginLeft: 'auto',
+                    marginRight: '2rem'
+                  }}
+                >
+                  <SectionTimeElapsed
+                    timeEntries={project.timeEntries as any as TimeEntry[]}
+                    size="sm"
+                    total={project.timeEntries.reduce((acc, timeEntry) => {
+                      let duration =
+                        (timeEntry.endTime
+                          ? new Date(timeEntry.endTime).getTime() -
+                            new Date(timeEntry.startTime).getTime()
+                          : Date.now() -
+                            new Date(timeEntry.startTime).getTime()) / 1000;
+
+                      return acc + duration;
+                    }, 0)}
+                  />
+                </div>
+              )}
               <Menu shadow="md" width={200}>
                 <Menu.Target>
                   <ActionIcon title="Edit" mr="xs">
