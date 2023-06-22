@@ -6,6 +6,8 @@ Time tracking app built with Remix, supports authentication, projects management
 
 Built for self-hosting: host it anywhere you want, and use it for free. Your time, your data.
 
+View on [DockerHub](https://hub.docker.com/r/nzambello/work-timer).
+
 ## Table of contents
 
 - [Features](#features)
