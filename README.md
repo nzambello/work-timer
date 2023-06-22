@@ -1,6 +1,6 @@
 # WorkTimer
 
-<img src="./public/logo.png" width="100" height="100" alt="WorkTimer" />
+<img src="https://github.com/nzambello/work-timer/raw/main/public/logo.png" width="100" height="100" alt="WorkTimer" />
 
 Time tracking app built with Remix, supports authentication, projects management, and monthly or custom reports.
 
@@ -15,6 +15,7 @@ Built for self-hosting: host it anywhere you want, and use it for free. Your tim
   - [Tech stack](#tech-stack)
   - [Running locally](#running-locally)
   - [Running with Docker](#running-with-docker)
+  - [Multi-platform docker image](#multi-platform-docker-image)
 - [Screenshots](#screenshots)
 - [License](#license)
 
@@ -44,6 +45,22 @@ docker run -d -p 8080:8080 -v /path/to/data:/data/data.db nzambello/work-timer
 If you want to use different defaults, you can build your own image. See [Running with docker](#running-with-docker)
 
 ### Docker compose
+
+Basic example:
+
+```yaml
+version: '3.8'
+
+services:
+  work-timer:
+    image: nzambello/work-timer
+    container_name: work-timer
+    restart: always
+    ports:
+      - 8080:8080
+    volumes:
+      - ./dockerData/work-timer:/data # Path to data for DB persistence
+```
 
 Example of docker-compose.yml with [Traefik](https://traefik.io/) as reverse proxy:
 
@@ -112,28 +129,35 @@ docker built -t work-timer .
 docker run -p 127.0.0.1:8080:8080 work-timer
 ```
 
+### Multi-platform Docker image
+
+```bash
+docker buildx create --name mybuilder --driver docker-container --bootstrap --use # create a new builder and switch to it using a single command.
+docker buildx build --platform linux/amd64,linux/arm64 -t nzambello/work-timer:latest --push .
+```
+
 ## Screenshots
 
 ### Light / Dark mode
 
-<img width="300" src="./public/images/00-time-entries-light.png" />
-<img width="300" src="./public/images/01-time-entries-dark.png" />
+<img width="300" src="https://github.com/nzambello/work-timer/raw/main/public/images/00-time-entries-light.png" />
+<img width="300" src="https://github.com/nzambello/work-timer/raw/main/public/images/01-time-entries-dark.png" />
 
 ### Time tracking
 
-<img width="500" src="./public/images/02-new-time-entry.png" />
+<img width="500" src="https://github.com/nzambello/work-timer/raw/main/public/images/02-new-time-entry.png" />
 
 ### Projects
 
-<img width="300" src="./public/images/03-projects.png" />
-<img width="300" src="./public/images/04-new-project.png" />
+<img width="300" src="https://github.com/nzambello/work-timer/raw/main/public/images/03-projects.png" />
+<img width="300" src="https://github.com/nzambello/work-timer/raw/main/public/images/04-new-project.png" />
 
 ### Reports
 
-<img width="500" src="./public/images/05-reports.png" />
+<img width="500" src="https://github.com/nzambello/work-timer/raw/main/public/images/05-reports.png" />
 
 ## License
 
 [Nicola Zambello](https://github.com/nzambello) © 2023
 
-[GNU GPLv3](./LICENSE)
+[GNU GPLv3](https://github.com/nzambello/work-timer/raw/main/LICENSE)
