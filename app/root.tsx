@@ -370,6 +370,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                   }`
                 }}
               >
+                <Badge variant="light">ADMIN</Badge>
                 <NavLink
                   component={Link}
                   to="/users"
@@ -379,9 +380,20 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
                       <Users size={16} />
                     </ThemeIcon>
                   }
-                  rightSection={<Badge variant="light">ADMIN</Badge>}
                   variant="light"
                   active={location.pathname.includes('/users')}
+                />
+                <NavLink
+                  component={Link}
+                  to="/settings"
+                  label="Settings"
+                  icon={
+                    <ThemeIcon variant="light">
+                      <Settings size={16} />
+                    </ThemeIcon>
+                  }
+                  variant="light"
+                  active={location.pathname.includes('/settings')}
                 />
               </Navbar.Section>
             )}
@@ -466,7 +478,15 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
               >
                 <Clock />
               </ThemeIcon>
-              <span>WorkTimer</span>
+              <span
+                style={{
+                  fontWeight: 700,
+                  lineHeight: 1.2,
+                  fontSize: '1.25rem'
+                }}
+              >
+                WorkTimer
+              </span>
             </Text>
 
             <div

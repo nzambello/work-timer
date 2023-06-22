@@ -17,7 +17,7 @@ import {
   Title
 } from '@mantine/core';
 import { AtSign, Lock } from 'react-feather';
-import { verifyLogin } from '~/models/user.server';
+import { countUsers, verifyLogin } from '~/models/user.server';
 import { createUserSession, getUserId } from '~/session.server';
 import { safeRedirect, validateEmail } from '~/utils';
 import { isSignupAllowed } from '~/config.server';
@@ -26,8 +26,11 @@ export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
   if (userId) return redirect('/time-entries');
 
+  const isFirstUser = (await countUsers()) === 0;
+  if (isFirstUser) return redirect('/signup');
+
   return json({
-    ALLOW_USER_SIGNUP: isSignupAllowed()
+    ALLOW_USER_SIGNUP: await isSignupAllowed()
   });
 }
 

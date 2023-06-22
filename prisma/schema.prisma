@@ -1,5 +1,5 @@
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -22,6 +22,11 @@ model User {
   password    Password?
   timeEntries TimeEntry[]
   projects    Project[]
+}
+
+model Settings {
+  id    String @id
+  value String
 }
 
 model Password {

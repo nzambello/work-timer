@@ -1,6 +1,12 @@
 import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node';
 import { json, redirect } from '@remix-run/node';
-import { Form, Link, useActionData, useSearchParams } from '@remix-run/react';
+import {
+  Form,
+  Link,
+  useActionData,
+  useLoaderData,
+  useSearchParams
+} from '@remix-run/react';
 import * as React from 'react';
 import {
   TextInput,
@@ -15,7 +21,7 @@ import {
 } from '@mantine/core';
 import { AtSign, Check, Lock, X } from 'react-feather';
 import { createUserSession, getUserId } from '~/session.server';
-import { createUser, getUserByEmail } from '~/models/user.server';
+import { countUsers, createUser, getUserByEmail } from '~/models/user.server';
 import { safeRedirect, validateEmail } from '~/utils';
 import { isSignupAllowed } from '~/config.server';
 
@@ -23,15 +29,21 @@ export async function loader({ request }: LoaderArgs) {
   const userId = await getUserId(request);
   if (userId) return redirect('/time-entries');
 
-  if (!isSignupAllowed()) {
+  const isFirstUser = (await countUsers()) === 0;
+
+  if (!(await isSignupAllowed())) {
     return redirect('/login');
   }
 
-  return json({});
+  return json({
+    isFirstUser
+  });
 }
 
 export async function action({ request }: ActionArgs) {
-  if (!isSignupAllowed()) {
+  const isFirstUser = (await countUsers()) === 0;
+
+  if (!isSignupAllowed() && !isFirstUser) {
     return json(
       {
         errors: {
@@ -116,7 +128,7 @@ export async function action({ request }: ActionArgs) {
     );
   }
 
-  const user = await createUser(email, password);
+  const user = await createUser(email, password, isFirstUser);
 
   return createUserSession({
     request,
@@ -175,6 +187,7 @@ function getStrength(password: string) {
 export default function SignUpPage() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get('redirectTo') ?? undefined;
+  const loaderData = useLoaderData<typeof loader>();
   const actionData = useActionData<typeof action>();
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
@@ -293,17 +306,19 @@ export default function SignUpPage() {
           <Button type="submit">Create account</Button>
         </Group>
 
-        <Box
-          mt="md"
-          sx={{
-            textAlign: 'center'
-          }}
-        >
-          Already have an account?{' '}
-          <Link to="/login">
-            <strong>Log in</strong>
-          </Link>
-        </Box>
+        {!loaderData.isFirstUser && (
+          <Box
+            mt="md"
+            sx={{
+              textAlign: 'center'
+            }}
+          >
+            Already have an account?{' '}
+            <Link to="/login">
+              <strong>Log in</strong>
+            </Link>
+          </Box>
+        )}
       </Form>
     </Box>
   );
