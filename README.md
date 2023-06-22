@@ -48,7 +48,7 @@ If you want to use different defaults, you can build your own image. See [Runnin
 Example of docker-compose.yml with [Traefik](https://traefik.io/) as reverse proxy:
 
 ```yaml
-uptime-kuma:
+work-timer:
   depends_on:
     - watchtower
   image: nzambello/work-timer
