@@ -11,11 +11,13 @@ export async function loader({ request }: LoaderArgs) {
     header: true
   });
 
+  const timestamp = new Date().toISOString().replace(/\D/g, '').slice(0, -3);
+
   return new Response(csv, {
     status: 200,
     headers: {
       'Content-Type': 'text/csv',
-      'Content-Disposition': 'attachment; filename="export.csv"'
-    }
+      'Content-Disposition': `attachment; filename="work-timer-export-${timestamp}.csv"`,
+    },
   });
 }
