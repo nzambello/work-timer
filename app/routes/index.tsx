@@ -159,6 +159,17 @@ export default function Index() {
           management, and monthly or custom reports
         </Text>
 
+        <h2>
+          <Text
+            component="span"
+            variant="gradient"
+            gradient={{ from: 'blue', to: 'cyan' }}
+            inherit
+          >
+            Your time, your data
+          </Text>
+        </h2>
+
         <Group className={classes.controls}>
           <Button
             component={Link}
@@ -181,7 +192,7 @@ export default function Index() {
             className={classes.control}
             leftIcon={<GitHub />}
           >
-            GitHub
+            View on GitHub
           </Button>
         </Group>
       </Container>
