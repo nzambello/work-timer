@@ -48,13 +48,21 @@ export async function loader({ request }: LoaderArgs) {
 
   await updateDuration(user.id);
 
+  const timeByProject = await getTimeEntriesByDateAndProject({
+    userId: user.id,
+    dateFrom,
+    dateTo
+  });
+
+  const total = timeByProject.reduce(
+    (acc, curr) => acc + (curr._sum.duration || 0),
+    0
+  );
+
   return json({
     user,
-    timeByProject: await getTimeEntriesByDateAndProject({
-      userId: user.id,
-      dateFrom,
-      dateTo
-    }),
+    timeByProject,
+    total,
     projects: await getProjects({ userId: user.id })
   });
 }
@@ -228,8 +236,8 @@ export default function ReportPage() {
           <thead>
             <tr>
               <th>Project</th>
-              <th>Time</th>
-              {hourlyRate && <th>Billing</th>}
+              <th scope="col">Time</th>
+              {hourlyRate && <th scope="col">Billing</th>}
             </tr>
           </thead>
           <tbody>
@@ -240,7 +248,7 @@ export default function ReportPage() {
               }[]
             ).map((projectData) => (
               <tr key={projectData.projectId}>
-                <td>
+                <td scope="row">
                   <Flex align="center">
                     <ColorSwatch
                       mr="sm"
@@ -272,6 +280,25 @@ export default function ReportPage() {
               </tr>
             ))}
           </tbody>
+          {!!reports.data?.timeByProject?.length && (
+            <tfoot>
+              <tr>
+                <th scope="row">Totals</th>
+                <th>{(reports.data.total / 1000 / 60 / 60).toFixed(2)} h</th>
+                {hourlyRate && (
+                  <th>
+                    {(
+                      (reports.data.total * hourlyRate) /
+                      1000 /
+                      60 /
+                      60
+                    ).toFixed(2)}{' '}
+                    {reports.data?.user?.currency ?? '€'}
+                  </th>
+                )}
+              </tr>
+            </tfoot>
+          )}
         </Table>
       )}
     </>
