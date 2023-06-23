@@ -11,6 +11,7 @@ yarn-error.log
 
 *.swp
 
+.docker
 /.cache
 /build
 /public/build
