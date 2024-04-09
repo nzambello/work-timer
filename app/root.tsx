@@ -254,8 +254,9 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
       padding="md"
       navbarOffsetBreakpoint="sm"
       asideOffsetBreakpoint="sm"
+      fixed={false}
       navbar={
-        user && (
+        user ? (
           <Navbar
             p="xs"
             hiddenBreakpoint="sm"
@@ -446,7 +447,7 @@ function Layout({ children }: React.PropsWithChildren<{}>) {
               </Navbar.Section>
             )}
           </Navbar>
-        )
+        ) : undefined
       }
       header={
         <Header height={{ base: 50, md: 70 }} p="md">
