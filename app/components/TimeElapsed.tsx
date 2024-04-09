@@ -37,6 +37,11 @@ const TimeElapsed = ({ startTime, endTime }: Props) => {
     return () => clearInterval(interval);
   }, [startTime, endTime]);
 
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   const hours = Math.floor(elapsed / 60 / 60);
   const minutes = Math.floor((elapsed - hours * 60 * 60) / 60);
   const seconds = Math.floor(elapsed - hours * 60 * 60 - minutes * 60);
@@ -62,35 +67,37 @@ const TimeElapsed = ({ startTime, endTime }: Props) => {
       >
         <code>{hoursString}</code>
       </pre>
-      <MediaQuery
-        smallerThan="sm"
-        styles={{
-          display: 'none'
-        }}
-      >
-        <p
-          style={{
-            fontSize: '0.75rem',
-            margin: 0
+      {isClient && (
+        <MediaQuery
+          smallerThan="sm"
+          styles={{
+            display: 'none'
           }}
         >
-          <span>
-            {Intl.DateTimeFormat(user?.dateFormat || 'en-GB', {
-              hour: '2-digit',
-              minute: '2-digit'
-            }).format(new Date(startTime))}
-          </span>
-          <span dangerouslySetInnerHTML={{ __html: '&nbsp;&mdash;&nbsp;' }} />
-          <span>
-            {endTime
-              ? Intl.DateTimeFormat(user?.dateFormat || 'en-GB', {
-                  hour: '2-digit',
-                  minute: '2-digit'
-                }).format(new Date(endTime))
-              : 'now'}
-          </span>
-        </p>
-      </MediaQuery>
+          <p
+            style={{
+              fontSize: '0.75rem',
+              margin: 0
+            }}
+          >
+            <span>
+              {Intl.DateTimeFormat(user?.dateFormat || 'en-GB', {
+                hour: '2-digit',
+                minute: '2-digit'
+              }).format(new Date(startTime))}
+            </span>
+            <span dangerouslySetInnerHTML={{ __html: '&nbsp;&mdash;&nbsp;' }} />
+            <span>
+              {endTime
+                ? Intl.DateTimeFormat(user?.dateFormat || 'en-GB', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  }).format(new Date(endTime))
+                : 'now'}
+            </span>
+          </p>
+        </MediaQuery>
+      )}
     </Box>
   );
 };
